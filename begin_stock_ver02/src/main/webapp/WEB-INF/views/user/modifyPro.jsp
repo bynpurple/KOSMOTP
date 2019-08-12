@@ -1,0 +1,44 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ include file="../include/header.jsp"%>  
+    
+<html>
+<body>
+ 
+  <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
+    
+    <c:if test="${updateCnt == 0}">
+        <script type="text/javascript">
+            errorAlert("업데이트 실패!");    
+            window.location="mypage";
+        </script>
+    </c:if>
+    
+    <c:if test="${updateCnt != 0}">
+        
+        <script type="text/javascript">
+            alert("업데이트 완료!!!");
+            window.location="mypage";
+        </script>        
+    
+    </c:if>
+    
+     <c:if test="${deleteCnt == 0}">
+        <script type="text/javascript">
+            errorAlert("회원탈퇴 실패!");    
+            window.location="mypage";
+        </script>
+    </c:if>
+    
+    <c:if test="${deleteCnt != 0}">
+        
+        <script type="text/javascript">
+            alert("회원탈퇴 완료!!!");
+            window.location="/";
+        </script>        
+    
+    </c:if>
+ 
+ 
+</body>
+</html>

@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+				
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+							
+<mapper namespace="com.spring.stock.persistence.StockDAO">
+	<insert id="insertUser" parameterType="java.util.Map">
+		INSERT INTO USERS(username, password, name, hp, hold, enabled, authority) VALUES(#{username}, #{password}, #{name}, #{hp}, 0, 1, 'ROLE_USER')
+	</insert>
+	
+	<select id="selectUser" resultType="java.util.Map"> <!-- #{map의 key}  -->
+		select username, password, name, hp, hold, enabled, authority
+			from users
+		where username=#{username}
+	</select>
+	
+	<select id="idCheck" resultType="int">
+		SELECT COUNT(*) FROM users WHERE username = #{username}
+	</select>
+	<select id="hpCheck" resultType="int">
+		SELECT COUNT(*) FROM users WHERE hp = #{hp}
+	</select>
+	
+	<insert id="insertAuth" parameterType="java.util.Map">
+		INSERT INTO STOCK_AUTH VALUES(#{hp}, #{numStr}, #{date})
+	</insert>
+	
+	<select id="authCheck" resultType="int" parameterType="java.util.Map">
+		<![CDATA[SELECT COUNT(*) FROM STOCK_AUTH WHERE hp=#{hp} AND auth_num=#{numStr} AND #{date} > sysdate - 3/24/60]]>
+	</select>
+	
+	<select id="idHpChk" resultType="int" parameterType="java.util.Map">
+		SELECT COUNT(*) FROM users WHERE name=#{name}AND hp=#{hp}
+	</select>
+	<update id="modifyPwd" parameterType="java.util.Map">
+		UPDATE users SET password = #{password} WHERE username=#{username}
+	</update>
+	
+	<select id="stockTickerYesterday" resultType="com.spring.stock.vo.StockRecodeVO" >
+		<![CDATA[
+		SELECT STOCKCODE, r_close, r_empty, rownum
+ 		 FROM (SELECT Y.STOCKCODE, y.r_close, t.r_close AS r_empty
+      			 FROM STOCK_RECODE Y, stock_recode T
+     			 WHERE y.stockcode = t.stockcode and y.r_date = '17/06/22' and t.r_date = '17/06/23'
+       		  ORDER BY t.r_close desc)
+       where rownum < 10
+   		 ]]>  
+	</select>
+	
+	<select id="searchList" resultType ="com.spring.stock.vo.Stock_StockVO">	<!-- 8/12 수정 된 부분 -->
+		select stockCode,stockName from stock_stock where stockCode LIKE '%'||#{keyword}||'%'
+  union select stockCode,stockName  from stock_stock where stockName LIKE '%'||#{keyword}||'%'
+	</select>
+	
+	  <!-- // 관심종목 갯수 구하기  -->
+   <select id="getItemCnt" resultType="int">
+   SELECT COUNT(*) as cnt FROM stock_stock
+   
+      <if test="input != ''">
+         WHERE stockname like '%'||#{input}||'%'
+      </if>
+   
+   </select>
+
+	<!-- // 관심종목 목록 조회 -->
+	<select id="getItemList" parameterType="java.util.Map" resultType="com.spring.stock.vo.StockstockVO">
+	SELECT * 
+	   FROM (SELECT STOCKCODE,STOCKTHEME,STOCKNAME,STOCKCURRENT,STOCKOPEN, STOCKHIGH, STOCKLOW, P_STEP, T_STEP, GAP, STOCKVOLUME, ORDERABLE, RATIO, TOTALSTOCK,STOCKDATE, rownum rNum 
+	      FROM(SELECT * FROM stock_stock 
+	      
+	      <if test="input != ''">
+	         WHERE STOCKNAME like '%'||#{input}||'%'
+	      </if>
+	      
+	      ORDER BY STOCKCODE ASC))
+	<![CDATA[
+	      WHERE rNum >= #{start} AND rNum <= #{end}
+	]]>   
+	</select>
+	   
+	<select id="selectCompany" resultType="com.spring.stock.vo.StockstockVO" parameterType="java.util.Map">
+	   select * from stock_stock where stockname=#{stockname} and stockcode=#{stockcode}
+	</select>
+	
+	<!-- 정기주 추가 부분 -->
+   <!-- 정기주 추가 부분 -->
+   <select id="financialInfo" parameterType="String" resultType="com.spring.stock.vo.StockRecodeVO">
+      <![CDATA[
+      select * from (
+          select r.r_date r_date, r.r_open r_open, r.r_high r_high, r.r_low r_low, r.r_close r_close, r.r_adj_close r_adj_close, r.r_volume r_volume, RANK() OVER (ORDER BY r.r_date desc) as rank
+          from stock_recode r, stock_stock s
+          where r.stockcode=s.stockcode
+          and r.stockcode=#{stockcode}
+          )
+      where rank<=10
+      ]]>
+   </select>
+   
+   <select id="StockInfo" parameterType="String" resultType="com.spring.stock.vo.StockstockVO">
+         select * from stock_stock
+         where stockcode=#{stockcode}
+   </select>
+   
+   <select id="chart" parameterType="String" resultType="Map">
+   <![CDATA[
+      select to_char(r_date,'yyyy') r_date, round(avg(r_volume)) r_volume, round(avg(r_close)) r_close from stock_recode
+      where stockcode=#{stockcode}
+      group by to_char(r_date,'yyyy')
+      order by r_date
+   ]]>
+   </select>
+   
+   <select id="stockList" resultType="com.spring.stock.vo.StockstockVO">
+      select * from stock_stock
+      order by stockcode
+   </select>
+   
+   <select id="stocklistsearch" parameterType="String" resultType="com.spring.stock.vo.StockstockVO">
+      select * from stock_stock
+      where stockname like '%'||#{stockname}||'%'
+      order by stockcode
+   </select>
+   
+   <insert id="insertInterest" parameterType="Map">
+         insert into stock_interest
+         values (#{id},#{stockcode})
+   </insert>
+   
+   <select id="checkInterest" parameterType="Map" resultType="int">
+         select COUNT(*) from stock_interest
+         where username=#{id} and stockcode=#{stockcode}
+   </select>
+   
+   <!-- 정기주 추가 부분 -->
+   
+   <!-- 정기주 추가 부분 -->
+   
+  	<select id="buyBook" resultType ="com.spring.stock.vo.Stock_StockVO" >
+		<![CDATA[
+		 select stockCode,stockTheme,stockName,stockCurrent,totalStock,stockDate,rownum
+      	 from (select stockCode,stockTheme,stockName,stockCurrent,totalStock,stockDate
+              from stock_stock order by stockDate asc)
+    	 stock_stock where ROWNUM < 5
+    	]]> 
+	</select>
+	
+	<select id="sellBook" resultType ="com.spring.stock.vo.Stock_StockVO" >
+		<![CDATA[
+		 select stockCode,stockTheme,stockName,stockCurrent,totalStock,stockDate,rownum
+      	 from (select stockCode,stockTheme,stockName,stockCurrent,totalStock,stockDate
+              from stock_stock order by stockName asc)
+    	 stock_stock where ROWNUM < 5
+    	]]> 
+	</select>
+	
+	<select id="asking_stock" resultType="com.spring.stock.vo.Stock_StockVO">
+		select stockCurrent,stockOpen,stockHigh,stockLow,t_step,gap,stockCode,stockName,stockOpen from stock_stock where stockCode = #{CompanyCode}
+	</select>
+	
+	<!-- 관심종목 삭제 -->
+	<delete id="deleteItem" parameterType="java.util.Map">
+		delete from stock_stock where stockname=#{stockname} and stockcode=#{stockcode}
+	</delete>
+	
+	<!-- 상단 5개 종목명 리스트 -->
+	<select id="getTopList" resultType="com.spring.stock.vo.Stock_StockVO">
+		<![CDATA[
+		select * from (select * from stock_stock s order by abs(gap) desc) where rownum < 6
+		]]> 
+	</select>
+	
+	<!-- //현재 존재하는 종목명 -->
+	<select id="getThemeList" resultType="String">
+		select stocktheme from stock_stock group by stocktheme
+	</select>
+	
+	<!-- 비밀번호 갖고오기  -->
+	<select id="getPwd" parameterType="java.util.Map" resultType="String">
+		SELECT password FROM users WHERE username=#{strId} 
+	</select>
+	
+	<!--  // 회원 정보 가지고 오기 (보여주기)  -->
+	<select id="getMemberInfo" resultType="com.spring.stock.vo.StockVO" parameterType="String">
+		SELECT * FROM users WHERE username=#{strId}
+	</select>
+	
+	<!-- // 회원 정보 수정 처리 -->
+	<update id="updateMember" parameterType="com.spring.stock.vo.StockVO">
+		UPDATE users SET password=#{password}, name=#{name}, hp=#{hp} WHERE username=#{username}
+	</update>
+	
+	<!-- // 회원정보 삭제 -->
+	<delete id="deleteMember" parameterType="String">
+		DELETE FROM users WHERE username=#{username}
+	</delete>
+	
+	
+</mapper>

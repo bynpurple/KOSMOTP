@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+
+	<!-- Mybatis 설정 시작 -->
+	<bean name = "dataSource" class ="org.springframework.jndi.JndiObjectFactoryBean">
+	<property name="jndiName" value = "java:comp/env/jdbc/Oracle11g_stock" />
+	<property name="resourceRef" value = "true" />
+	</bean>
+	
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+	    <property name="dataSource" ref = "dataSource" />
+	    <property name="mapperLocations" value = "classpath:stock_mapper/*.xml" /> <!--Mybatis xml의 경로 -->
+	</bean>
+	
+	<bean id ="sqlSession" class = "org.mybatis.spring.SqlSessionTemplate">
+	    <constructor-arg ref ="sqlSessionFactory"/>
+	</bean>
+	<!-- Mybatis 설정 종료 -->
+	
+	<!-- 트랜잭션 관리자 : @Transactional 어노테이션 처리 -->
+	<!-- namespaces 탭에서 tx 추가 -->
+	<tx:annotation-driven transaction-manager="transactionManager"/>
+	<bean id ="transactionmanager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+	    <property name="dataSource" ref="dataSource" />
+	</bean>
+
+</beans>

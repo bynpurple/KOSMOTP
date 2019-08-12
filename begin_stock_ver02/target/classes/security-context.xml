@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:sec="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+		
+	<!-- 정적 리소스 파일들에는 보안 설정을 하지 않겠다 -->
+	<sec:http pattern="/css/**" security="none" />
+	<sec:http pattern="/assets/**" security="none" />
+	<sec:http pattern="/include/**" security="none" />
+	<sec:http pattern="/resources/**" security="none" />
+	<sec:http auto-config="true" use-expressions="true" create-session="never">
+	
+		<!-- 관리자 역역 설정 -->
+		<sec:intercept-url pattern="/admin/**" access="hasRole('ROLE_ADMIN')"/>
+		<!-- 권한에 관계없이 접속 가능한 영역(guest도 접속 가능) -->
+		<sec:intercept-url pattern="/user/**" access="permitAll"/>
+		<!-- 로그인한 사용자 영역 -->
+		<sec:intercept-url pattern="/**" access="hasAnyRole('ROLE_USER', 'ROLE_ADMIN')"/>
+		<!-- 로그인 폼 -->
+		<!-- 	username-parameter="테이블 컬럼명" password-parameter="테이블 컬럼명" -->
+		<sec:form-login login-page="/user/login"
+			login-processing-url="/user/login_check"
+			authentication-success-handler-ref="userLoginSuccessHandler"
+			authentication-failure-handler-ref="userLoginFailureHandler"
+			username-parameter="username" password-parameter="password"/>
+			
+		<sec:session-management>
+			<!-- max-sessions="1" : 같은 브라우저 여러창에서 동시접속 막기
+				 expired-url="/user/login.do" : 세션 만료시 이동할 주소
+				 error-if-maximum-exceeded="true" : 최대 세션 초과시 에러 옵션
+			-->
+			<sec:concurrency-control max-sessions="1"
+				expired-url="/user/login"
+				error-if-maximum-exceeded="true"
+			/>
+		</sec:session-management>
+		<!-- 접근권한이 없는 경우의 코드 -->
+		<sec:access-denied-handler ref="userDeniedHandler"/>
+		<sec:logout/>
+	</sec:http>
+
+	<bean id="userLoginSuccessHandler" class="com.spring.stock.service.UserLoginSuccessHandler" />
+	<bean id="userLoginFailureHandler" class="com.spring.stock.service.UserLoginFailureHandler" />
+	<bean id="userDeniedHandler" class="com.spring.stock.service.UserDeniedHandler" />
+	
+	<bean id="userSevice" class="com.spring.stock.service.UserAuthenticationService" >
+		<constructor-arg name="sqlSession" ref="sqlSession" />
+	</bean>
+	
+	<!-- 비밀번호 암호화를 빈 (중요!) -->
+	
+	<bean id="bcryptPasswordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>
+
+</beans>
