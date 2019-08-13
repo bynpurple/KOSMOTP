@@ -5,7 +5,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>아이디 또는 비밀번호 찾기</title>
+<title>아이디 혹은 비밀번호 찾기</title>
 </head>
 <body style="background:#252525;">
 	<table align="center">
