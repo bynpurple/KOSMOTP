@@ -9,7 +9,6 @@
     <meta name="description" content="">
     <meta name="author" content="">
 	<%@ include file="../include/header.jsp" %>
-	<link rel="icon" href="${project}images/favicon.ico">
 	<script src="/stock/resources/js/jquery-3.4.1.min.js"></script>
 	<c:set var ="project" value="/stock/resources/"/>
 
@@ -68,7 +67,7 @@
     <!-- Main content -->
     <section class="content">
 	  <h1 class="page-header text-center mt-30 mb-30">
-		  <span class="text-bold text-yellow">EZ-STOCK</span> 종목 <span class="text-bold text-yellow">분석</span><br>
+		  <span class="text-bold text-yellow">EZ-STOCK</span> 테마 <span class="text-bold text-yellow">정보</span><br>
 		  <p class="font-size-18 mb-0">거래 변동량 상위 5개의 종목페이지와 각 테마의 개요를 보여줍니다. 해당 종목의 블럭을 클릭하면 해당 페이지로 이동합니다.</p>
 	  </h1>
 	  <div class="row">
@@ -93,7 +92,7 @@
 						  		<tr>
 						  		<c:if test="${toplist.getGap() < 0}">
 			  			 		  <td>${toplist.getStockTheme()}</td>
-								  <td>${toplist.getStockName()}</td>
+								  <td onclick="location.href='financialInfo?stockcode=${toplist.getStockCode()}'" style="cursor:pointer;">${toplist.getStockName()}</td>
 								  <td style="color:pink;">${toplist.getStockCurrent()}</td>
 								  <td style="color:pink;">${toplist.getStockOpen()}</td>
 								  <td>${toplist.getStockVolume()}</td>
@@ -103,7 +102,7 @@
 						  		
 						  		<c:if test="${toplist.getGap() > 0}">
 			  			 		  <td>${toplist.getStockTheme()}</td>
-								  <td>${toplist.getStockName()}</td>
+								  <td onclick="location.href='financialInfo?stockcode=${toplist.getStockCode()}'" style="cursor:pointer;">${toplist.getStockName()}</td>
 								  <td style="color:#6699cc;">${toplist.getStockCurrent()}</td>
 								  <td style="color:#6699cc;">${toplist.getStockOpen()}</td>
 								  <td>${toplist.getStockVolume()}</td>
@@ -118,326 +117,96 @@
 				</div>
 			</div>		  
 		</div>
-		<div class="col-md-6 col-lg-3 col-12">
-		  <div class="box box-inverse bg-dark bg-hexagons-white pull-up">
-			  <div class="box-body text-center">
-				  <h2 class="mb-0 text-bold">XRP</h2>
-				  <h4>Ripple</h4>
-				  <ul class="flexbox flex-justified text-center mt-30 bb-1 border-gray pb-20">
-					  <li class="br-1 border-gray">
-						<div>USD</div>
-						<small class="font-size-18">11.153</small>
-					  </li>
-
-					  <li class="br-1 border-gray">
-						<div>EUR</div>
-						<small class="font-size-18">1.9232</small>
-					  </li>
-
-					  <li>
-						<div>GBP</div>
-						<small class="font-size-18">1.8202</small>
-					  </li>
-                  </ul>
-				  <ul class="flexbox flex-justified text-center mt-20">
-					  <li class="br-1 border-gray">
-						<div>% 1h</div>
-						<small class="font-size-18"><i class="fa fa-arrow-up text-success pr-5"></i>1.4</small>
-					  </li>
-
-					  <li class="br-1 border-gray">
-						<div>% 24h</div>
-						<small class="font-size-18"><i class="fa fa-arrow-up text-success pr-5"></i>3.29</small>
-					  </li>
-
-					  <li>
-						<div>% 7d</div>
-						<small class="font-size-18"><i class="fa fa-arrow-up text-success pr-5"></i>54.77</small>
-					  </li>
-                  </ul>
-			  </div>
-		  </div>
-		</div>
-		<div class="col-md-6 col-lg-3 col-12">
-		  <div class="box box-inverse bg-yellow text-black bg-hexagons-dark pull-up">
-			  <div class="box-body text-center">
-				  <h2 class="mb-0 text-bold"><span class="text-black">ETH</span></h2>
-				  <h4><span class="text-black">Ethereum</span></h4>
-				  <ul class="flexbox flex-justified text-center mt-30 bb-1 border-dark pb-20">
-					  <li class="br-1 border-dark">
-						<div class="text-black">USD</div>
-						<small class="font-size-18"><span class="text-black">2.153</span></small>
-					  </li>
-
-					  <li class="br-1 border-dark">
-						<div class="text-black">EUR</div>
-						<small class="font-size-18"><span class="text-black">3.9232</span></small>
-					  </li>
-
-					  <li>
-						<div class="text-black">GBP</div>
-						<small class="font-size-18"><span class="text-black">3.8202</span></small>
-					  </li>
-                  </ul>
-				  <ul class="flexbox flex-justified text-center mt-20">
-					  <li class="br-1 border-dark">
-						<div class="text-black">% 1h</div>
-						<small class="font-size-18"><span class="text-black"><i class="fa fa-arrow-up pr-5"></i>0.4</span></small>
-					  </li>
-
-					  <li class="br-1 border-dark">
-						<div class="text-black">% 24h</div>
-						<small class="font-size-18"><span class="text-black"><i class="fa fa-arrow-up pr-5"></i>9.29</span></small>
-					  </li>
-
-					  <li>
-						<div class="text-black">% 7d</div>
-						<small class="font-size-18"><span class="text-black"><i class="fa fa-arrow-up pr-5"></i>50.77</span></small>
-					  </li>
-                  </ul>
-			  </div>
-		  </div>
-		</div>
-		<div class="col-md-6 col-lg-3 col-12">
-		  <div class="box box-inverse bg-dark bg-hexagons-white pull-up">
-			  <div class="box-body text-center">
-				  <h2 class="mb-0 text-bold">LTC</h2>
-				  <h4>Litecoin</h4>
-				  <ul class="flexbox flex-justified text-center mt-30 bb-1 border-gray pb-20">
-					  <li class="br-1 border-gray">
-						<div>USD</div>
-						<small class="font-size-18">1.153</small>
-					  </li>
-
-					  <li class="br-1 border-gray">
-						<div>EUR</div>
-						<small class="font-size-18">0.9232</small>
-					  </li>
-
-					  <li>
-						<div>GBP</div>
-						<small class="font-size-18">0.8202</small>
-					  </li>
-                  </ul>
-				  <ul class="flexbox flex-justified text-center mt-20">
-					  <li class="br-1 border-gray">
-						<div>% 1h</div>
-						<small class="font-size-18"><i class="fa fa-arrow-up text-success pr-5"></i>0.4</small>
-					  </li>
-
-					  <li class="br-1 border-gray">
-						<div>% 24h</div>
-						<small class="font-size-18"><i class="fa fa-arrow-up text-success pr-5"></i>9.29</small>
-					  </li>
-
-					  <li>
-						<div>% 7d</div>
-						<small class="font-size-18"><i class="fa fa-arrow-up text-success pr-5"></i>50.77</small>
-					  </li>
-                  </ul>
-			  </div>
-		  </div>
-		</div>
-		<div class="col-md-6 col-lg-3 col-12">
-		  <div class="box box-inverse bg-yellow text-black bg-hexagons-dark pull-up">
-			  <div class="box-body text-center">
-				  <h2 class="mb-0 text-bold"><span class="text-black">BTC</span></h2>
-				  <h4><span class="text-black">Bitcoin</span></h4>
-				  <ul class="flexbox flex-justified text-center mt-30 bb-1 border-dark pb-20">
-					  <li class="br-1 border-dark">
-						<div class="text-black">USD</div>
-						<small class="font-size-18"><span class="text-black">1.153</span></small>
-					  </li>
-
-					  <li class="br-1 border-dark">
-						<div class="text-black">EUR</div>
-						<small class="font-size-18"><span class="text-black">0.9232</span></small>
-					  </li>
-
-					  <li>
-						<div class="text-black">GBP</div>
-						<small class="font-size-18"><span class="text-black">0.8202</span></small>
-					  </li>
-                  </ul>
-				  <ul class="flexbox flex-justified text-center mt-20">
-					  <li class="br-1 border-dark">
-						<div class="text-black">% 1h</div>
-						<small class="font-size-18"><span class="text-black"><i class="fa fa-arrow-up pr-5"></i>0.4</span></small>
-					  </li>
-
-					  <li class="br-1 border-dark">
-						<div class="text-black">% 24h</div>
-						<small class="font-size-18"><span class="text-black"><i class="fa fa-arrow-up pr-5"></i>9.29</span></small>
-					  </li>
-
-					  <li>
-						<div class="text-black">% 7d</div>
-						<small class="font-size-18"><span class="text-black"><i class="fa fa-arrow-up pr-5"></i>50.77</span></small>
-					  </li>
-                  </ul>
-			  </div>
-		  </div>
-		 </div> 
-		<div class="col-md-6 col-lg-3 col-12">
-		  <div class="box box-inverse bg-yellow text-black bg-hexagons-dark pull-up">
-			  <div class="box-body text-center">
-				  <h2 class="mb-0 text-bold"><span class="text-black">ETH</span></h2>
-				  <h4><span class="text-black">Ethereum</span></h4>
-				  <ul class="flexbox flex-justified text-center mt-30 bb-1 border-dark pb-20">
-					  <li class="br-1 border-dark">
-						<div class="text-black">USD</div>
-						<small class="font-size-18"><span class="text-black">2.153</span></small>
-					  </li>
-
-					  <li class="br-1 border-dark">
-						<div class="text-black">EUR</div>
-						<small class="font-size-18"><span class="text-black">3.9232</span></small>
-					  </li>
-
-					  <li>
-						<div class="text-black">GBP</div>
-						<small class="font-size-18"><span class="text-black">3.8202</span></small>
-					  </li>
-                  </ul>
-				  <ul class="flexbox flex-justified text-center mt-20">
-					  <li class="br-1 border-dark">
-						<div class="text-black">% 1h</div>
-						<small class="font-size-18"><span class="text-black"><i class="fa fa-arrow-up pr-5"></i>0.4</span></small>
-					  </li>
-
-					  <li class="br-1 border-dark">
-						<div class="text-black">% 24h</div>
-						<small class="font-size-18"><span class="text-black"><i class="fa fa-arrow-up pr-5"></i>9.29</span></small>
-					  </li>
-
-					  <li>
-						<div class="text-black">% 7d</div>
-						<small class="font-size-18"><span class="text-black"><i class="fa fa-arrow-up pr-5"></i>50.77</span></small>
-					  </li>
-                  </ul>
-			  </div>
-		  </div>
-		</div>
-		<div class="col-md-6 col-lg-3 col-12">
-		  <div class="box box-inverse bg-dark bg-hexagons-white pull-up">
-			  <div class="box-body text-center">
-				  <h2 class="mb-0 text-bold">XRP</h2>
-				  <h4>Ripple</h4>
-				  <ul class="flexbox flex-justified text-center mt-30 bb-1 border-gray pb-20">
-					  <li class="br-1 border-gray">
-						<div>USD</div>
-						<small class="font-size-18">11.153</small>
-					  </li>
-
-					  <li class="br-1 border-gray">
-						<div>EUR</div>
-						<small class="font-size-18">1.9232</small>
-					  </li>
-
-					  <li>
-						<div>GBP</div>
-						<small class="font-size-18">1.8202</small>
-					  </li>
-                  </ul>
-				  <ul class="flexbox flex-justified text-center mt-20">
-					  <li class="br-1 border-gray">
-						<div>% 1h</div>
-						<small class="font-size-18"><i class="fa fa-arrow-up text-success pr-5"></i>1.4</small>
-					  </li>
-
-					  <li class="br-1 border-gray">
-						<div>% 24h</div>
-						<small class="font-size-18"><i class="fa fa-arrow-up text-success pr-5"></i>3.29</small>
-					  </li>
-
-					  <li>
-						<div>% 7d</div>
-						<small class="font-size-18"><i class="fa fa-arrow-up text-success pr-5"></i>54.77</small>
-					  </li>
-                  </ul>
-			  </div>
-		  </div>
-		</div>
-		<div class="col-md-6 col-lg-3 col-12">
-		  <div class="box box-inverse bg-yellow text-black bg-hexagons-dark pull-up">
-			  <div class="box-body text-center">
-				  <h2 class="mb-0 text-bold"><span class="text-black">BTC</span></h2>
-				  <h4><span class="text-black">Bitcoin</span></h4>
-				  <ul class="flexbox flex-justified text-center mt-30 bb-1 border-dark pb-20">
-					  <li class="br-1 border-dark">
-						<div class="text-black">USD</div>
-						<small class="font-size-18"><span class="text-black">1.153</span></small>
-					  </li>
-
-					  <li class="br-1 border-dark">
-						<div class="text-black">EUR</div>
-						<small class="font-size-18"><span class="text-black">0.9232</span></small>
-					  </li>
-
-					  <li>
-						<div class="text-black">GBP</div>
-						<small class="font-size-18"><span class="text-black">0.8202</span></small>
-					  </li>
-                  </ul>
-				  <ul class="flexbox flex-justified text-center mt-20">
-					  <li class="br-1 border-dark">
-						<div class="text-black">% 1h</div>
-						<small class="font-size-18"><span class="text-black"><i class="fa fa-arrow-up pr-5"></i>0.4</span></small>
-					  </li>
-
-					  <li class="br-1 border-dark">
-						<div class="text-black">% 24h</div>
-						<small class="font-size-18"><span class="text-black"><i class="fa fa-arrow-up pr-5"></i>9.29</span></small>
-					  </li>
-
-					  <li>
-						<div class="text-black">% 7d</div>
-						<small class="font-size-18"><span class="text-black"><i class="fa fa-arrow-up pr-5"></i>50.77</span></small>
-					  </li>
-                  </ul>
-			  </div>
-		  </div>
-		 </div>
-		<div class="col-md-6 col-lg-3 col-12">
-		  <div class="box box-inverse bg-dark bg-hexagons-white pull-up">
-			  <div class="box-body text-center">
-				  <h2 class="mb-0 text-bold">LTC</h2>
-				  <h4>Litecoin</h4>
-				  <ul class="flexbox flex-justified text-center mt-30 bb-1 border-gray pb-20">
-					  <li class="br-1 border-gray">
-						<div>USD</div>
-						<small class="font-size-18">1.153</small>
-					  </li>
-
-					  <li class="br-1 border-gray">
-						<div>EUR</div>
-						<small class="font-size-18">0.9232</small>
-					  </li>
-
-					  <li>
-						<div>GBP</div>
-						<small class="font-size-18">0.8202</small>
-					  </li>
-                  </ul>
-				  <ul class="flexbox flex-justified text-center mt-20">
-					  <li class="br-1 border-gray">
-						<div>% 1h</div>
-						<small class="font-size-18"><i class="fa fa-arrow-up text-success pr-5"></i>0.4</small>
-					  </li>
-
-					  <li class="br-1 border-gray">
-						<div>% 24h</div>
-						<small class="font-size-18"><i class="fa fa-arrow-up text-success pr-5"></i>9.29</small>
-					  </li>
-
-					  <li>
-						<div>% 7d</div>
-						<small class="font-size-18"><i class="fa fa-arrow-up text-success pr-5"></i>50.77</small>
-					  </li>
-                  </ul>
-			  </div>
-		  </div>
-		</div>		
+		<% int i = 0; %>
+		<c:forEach var="themeMap" items="${themeMap}">
+			
+			
+			<% if(i % 2 == 0) {%>
+				<div class="col-md-6 col-lg-3 col-12">
+				   <div class="box box-inverse bg-dark bg-hexagons-white pull-up" style="height:320px;cursor:pointer;" onclick="location.href='detailtheme?theme=${themeMap.key}'">
+			   			<div class="box-body text-center">
+						  <h2 class="mb-0 text-bold">${themeMap.key}</h2>
+						  <h4>주요 종목</h4>
+						  <ul class="flexbox flex-justified text-center mt-30 bb-1 border-gray pb-20">
+							  <li class="br-1 border-gray">
+								<div>최고가 종목</div>
+								<small class="font-size-18">${themeMap.value[0].stockName}</small>
+							  </li>
+		
+							  <li class="br-1 border-gray">
+								<div>최다 거래량 종목</div>
+								<small class="font-size-18">${themeMap.value[1].stockName}</small>
+							  </li>
+		
+							  <li>
+								<div>최고변동 종목</div>
+								<small class="font-size-18">${themeMap.value[2].stockName}</small>
+							  </li>
+		                  </ul>
+						  <ul class="flexbox flex-justified text-center mt-20">
+							  <li class="br-1 border-gray">
+								<div>최고가</div>
+								<small class="font-size-18"></i>${themeMap.value[0].stockCurrent} 원</small>
+							  </li>
+		
+							  <li class="br-1 border-gray">
+								<div>거래량</div>
+								<small class="font-size-18"></i>${themeMap.value[1].stockVolume} 주</small>
+							  </li>
+		
+							  <li>
+								<div>변동률</div>
+								<small class="font-size-18">${themeMap.value[2].gap}%</small>
+							  </li>
+		                  </ul>
+					  </div>
+				  </div>
+				</div>
+			<% } else {%>
+				<div class="col-md-6 col-lg-3 col-12">
+				  <div class="box box-inverse bg-yellow text-black bg-hexagons-dark pull-up" style="height:320px;cursor:pointer;" onclick="location.href='detailtheme?theme=${themeMap.key}'">
+					  <div class="box-body text-center">
+						  <h2 class="mb-0 text-bold"><span class="text-black">${themeMap.key}</span></h2>
+						  <h4><span class="text-black">주요 종목</span></h4>
+						  <ul class="flexbox flex-justified text-center mt-30 bb-1 border-dark pb-20">
+							  <li class="br-1 border-dark">
+								<div class="text-black">최고가 종목</div>
+								<small class="font-size-18"><span class="text-black">${themeMap.value[0].stockName}</span></small>
+							  </li>
+		
+							  <li class="br-1 border-dark">
+								<div class="text-black">최다 거래량 종목</div>
+								<small class="font-size-18"><span class="text-black">${themeMap.value[1].stockName}</span></small>
+							  </li>
+		
+							  <li>
+								<div class="text-black">최고변동 종목</div>
+								<small class="font-size-18"><span class="text-black">${themeMap.value[2].stockName}</span></small>
+							  </li>
+		                  </ul>
+						  <ul class="flexbox flex-justified text-center mt-20">
+							  <li class="br-1 border-dark">
+								<div class="text-black">최고가</div>
+								<small class="font-size-18"><span class="text-black">${themeMap.value[0].stockCurrent} 원</span></small>
+							  </li>
+		
+							  <li class="br-1 border-dark">
+								<div class="text-black">거래량</div>
+								<small class="font-size-18"><span class="text-black">${themeMap.value[1].stockVolume} 주</span></small>
+							  </li>
+		
+							  <li>
+								<div class="text-black">변동률</div>
+								<small class="font-size-18"><span class="text-black">${themeMap.value[2].gap}%</span></small>
+							  </li>
+		                  </ul>
+					  </div>
+				  </div>
+				</div>
+			<% } i++;%>
+				  
+		</c:forEach>
+		
 	  </div>
     </section>
     <!-- /.content -->

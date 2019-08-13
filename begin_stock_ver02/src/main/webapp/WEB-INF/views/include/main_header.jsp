@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ include file="../include/header.jsp" %>
 <!-- Logo -->
     <a href="../../index.html" class="logo">
       <!-- mini logo for sidebar mini 50x50 pixels -->
@@ -19,16 +20,26 @@
       <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
         <span class="sr-only">Toggle navigation</span>
       </a>
-
+		<div id="marquee" style="width:70%;">
+      <marquee behavior="scroll" scrollamount="7" direction="left" onmouseover='stop();' onmouseout='start();'>
+         <b style="color:white;"><strong>검색 상위 종목 TOP5</strong>&nbsp;&nbsp;&nbsp;</b>
+         <c:forEach var="vo" items="${best}">
+            <b style="color:white;">${vo.number }위</b> <a href="${vo.url }" target="_blank" style="color:grey;">${vo.title } </a>
+         </c:forEach>
+            
+         <b style="color:white;">&nbsp;&nbsp;&nbsp;<strong>급상승 종목 TOP10</strong>&nbsp;&nbsp;&nbsp;</b>
+         <c:forEach var="vo" items="${up}">
+            <b style="color:white;">${vo.num }위</b> <a href="${vo.url }" target="_blank" style="color:grey;">${vo.title } </a>
+         </c:forEach>
+            
+         <b style="color:white;">&nbsp;&nbsp;<strong>네이버 실시간 검색어 TOP10</strong>&nbsp;&nbsp;&nbsp;</b>
+         <c:forEach var="vo" items="${naver}">
+            <b style="color:white;">${vo.num }위</b> <a href="${vo.url }" target="_blank" style="color:grey;">${vo.title } </a>
+         </c:forEach>
+      </marquee>
+   		</div>
       <div class="navbar-custom-menu">
         <ul class="nav navbar-nav">
-		  
-		  <li class="search-box">
-            <a class="nav-link hidden-sm-down" href="javascript:void(0)"><i class="mdi mdi-magnify"></i></a>
-            <form class="app-search" style="display: none;">
-                <input type="text" class="form-control" placeholder="Search &amp; enter"> <a class="srh-btn"><i class="ti-close"></i></a>
-			</form>
-          </li>			
 		  
           <!-- Messages -->
           <li class="dropdown messages-menu">
@@ -272,51 +283,6 @@
                 <a href="#">View all tasks</a>
               </li>
             </ul>
-          </li>
-		  <!-- User Account -->
-          <li class="dropdown user user-menu">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-              <img src="${project}images/user5-128x128.jpg" class="user-image rounded-circle" alt="User Image" style="margin-top:15px">
-            </a>
-            <ul class="dropdown-menu scale-up">
-              <!-- User image -->
-              <li class="user-header">
-                <img src="${project}images/user5-128x128.jpg" class="float-left rounded-circle" alt="User Image">
-
-                <p>
-                  Romi Roy
-                  <small class="mb-5">jb@gmail.com</small>
-                  <a href="#" class="btn btn-danger btn-sm btn-rounded">View Profile</a>
-                </p>
-              </li>
-              <!-- Menu Body -->
-              <li class="user-body">
-                <div class="row no-gutters">
-                  <div class="col-12 text-left">
-                    <a href="#"><i class="ion ion-person"></i> My Profile</a>
-                  </div>
-                  <div class="col-12 text-left">
-                    <a href="#"><i class="ion ion-email-unread"></i> Inbox</a>
-                  </div>
-                  <div class="col-12 text-left">
-                    <a href="#"><i class="ion ion-settings"></i> Setting</a>
-                  </div>
-				<div role="separator" class="divider col-12"></div>
-				  <div class="col-12 text-left">
-                    <a href="#"><i class="ti-settings"></i> Account Setting</a>
-                  </div>
-				<div role="separator" class="divider col-12"></div>
-				  <div class="col-12 text-left">
-                    <a href="#"><i class="fa fa-power-off"></i> Logout</a>
-                  </div>				
-                </div>
-                <!-- /.row -->
-              </li>
-            </ul>
-          </li>
-          <!-- Control Sidebar Toggle Button -->
-          <li>
-            <a href="#" data-toggle="control-sidebar" style="margin-top:18px"><i class="fa fa-cog fa-spin"></i></a>
           </li>
         </ul>
       </div>

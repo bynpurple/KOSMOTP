@@ -6,6 +6,7 @@
 <body>
 	<table>
 		<c:forEach var="list" items="${searchList}">
+		<tbody>
 		<tr>
 			<td class="w-300">
 			<h3 class="no-margin text-bold"><a href="javascript:select('${list.stockCode}');" class="hover-secondary d-inline-block">${list.stockCode}</a></h3>
@@ -14,6 +15,7 @@
 			<h3 class="no-margin text-bold"><a class="hover-secondary d-inline-block">${list.stockName}</a></h3>	
 			</td>
 		</tr>
+		</tbody>
 		</c:forEach>
 	</table>
 <script src="/stock/resources/js/jquery-3.4.1.min.js"></script>
@@ -27,6 +29,18 @@ function select(code) {
 					url: '${pageContext.request.contextPath}/user/asking_stock',
 					success:function(data){
 						$('#asking').html(data);
+					},
+					error:function(){
+						alert('잠시만 기다려주세요');
+					}
+				});
+				
+				$.ajax({
+					type:"GET",
+					data:"CompanyCode=" + code,
+					url: '${pageContext.request.contextPath}/user/chart_stock',
+					success:function(data){
+						$('#chart_stock').html(data);
 					},
 					error:function(){
 						alert('잠시만 기다려주세요');

@@ -11625,7 +11625,7 @@ table.dataTable thead .sorting:after {
 .treeview-menu>li>a {
     padding: 8px 5px 8px 60px;
     display: block;
-    font-size: 13px;
+    font-size: 16px;
 }
 .sidebar-collapse .treeview-menu>li>a {
     padding: 10px 5px 10px 30px;
@@ -14228,7 +14228,7 @@ animation: AnimationName 20s ease infinite;
     min-width: 200px;
 }
 .dropdown-grid.cols-4 .dropdown-item {
-    flex-basis: 25%;
+    flex-basis: 20%;
 }
 .dropdown-grid.cols-4 {
     min-width: 400px;

@@ -31,10 +31,10 @@
 				 expired-url="/user/login.do" : 세션 만료시 이동할 주소
 				 error-if-maximum-exceeded="true" : 최대 세션 초과시 에러 옵션
 			-->
-			<sec:concurrency-control max-sessions="1"
+			<!-- <sec:concurrency-control max-sessions="1"
 				expired-url="/user/login"
 				error-if-maximum-exceeded="true"
-			/>
+			/> -->
 		</sec:session-management>
 		<!-- 접근권한이 없는 경우의 코드 -->
 		<sec:access-denied-handler ref="userDeniedHandler"/>

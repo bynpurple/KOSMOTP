@@ -38,10 +38,14 @@
 	<script src="${project}js/demo.js"></script>
 	
 </head>
-
 <body class="hold-transition skin-black sidebar-mini">
 <div class="wrapper">
-
+	<c:if test="${result == 0}">
+		<script type="text/javascript">
+			alert("잘못된 입력입니다. 이전페이지로 이동합니다.");
+			window.history.back();
+		</script>
+	</c:if>
   <header class="main-header">
     <%@ include file="../include/main_header.jsp" %>
   </header>
@@ -55,17 +59,117 @@
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
     <section class="content-header">
-      <h1>종목 분석</h1>
+      <h1>테마 분석  > ${param.theme}</h1>
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="#"><i class="fa fa-dashboard"></i> 홈</a></li>
         <li class="breadcrumb-item"><a href="#">차트 및 종목 분석</a></li>
-        <li class="breadcrumb-item active">종목 분석</li>
+        <li class="breadcrumb-item active">테마 분석</li>
       </ol>
     </section>
 
     <!-- Main content -->
     <section class="content">
       <div class="row">
+      	<div class="col-12">
+          <div class="box">
+            <div class="box-header with-border">
+              <h3 class="box-title">테마 개요</h3>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+				<div class="table-responsive">
+					<table class="table table-bordered">
+					  <thead style="text-align:center;">
+						<tr>
+						  <th rowspan="2" style="vertical-align:middle;">테마명</th>
+						  <th scope="col" rowspan="2" style="vertical-align:middle;">전일대비</th>
+						  <th scope="col" colspan="3">전일대비 등락현황</th>
+						</tr>
+						<tr>
+						  <th scope="col">전체</th>
+						  <th scope="col">상승</th>
+						  <th scope="col">하락</th>
+						</tr>
+					  </thead>
+					  <c:set var="svo" value="${svo}"/>
+					  <tbody style="text-align:center;">
+						<tr>
+						  <th scope="col">${param.theme}</th>
+						  <c:if test="${svo.avg_gap < 0}">
+						  <td><span class="label label-danger">${svo.avg_gap}</span></td>
+						  </c:if>
+						  <c:if test="${svo.avg_gap == 0}">
+						  <td><span class="label label-warning">${svo.avg_gap}</span></td>
+						  </c:if>
+						  <c:if test="${svo.avg_gap > 0}">
+						  <td><span class="label label-success">${svo.avg_gap}</span></td>
+						  </c:if>
+						  <td>${svo.total_gap_count}</td>
+						  <td>${svo.upper_gap_count}</td>
+						  <td>${svo.lower_gap_count}</td>
+						</tr>
+					  </tbody>
+					</table>
+				</div>
+            </div>
+            <!-- /.box-body -->
+          </div>
+          <!-- /.box -->
+         </div> 		 
+        <!-- /.col -->
+      
+      
+      	<div class="col-12">
+         
+          <div class="box box-solid bg-dark">
+            <div class="box-header with-border">
+              <h3 class="box-title">해당 테마 포함 종목</h3>
+              <h6 class="box-subtitle">우측에 검색하실 수 있습니다.</h6>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+				<div class="table-responsive">
+				  <table id="example" class="table table-bordered table-hover display nowrap margin-top-10 w-p100">
+					<thead>
+						<tr>
+							<th>종목코드</th>
+							<th>종목명</th>
+							<th>현재가</th>
+							<th>전일대비등락율</th>
+							<th>시가 총액</th>
+							<th>거래량</th>
+						</tr>
+					</thead>
+					<tbody>
+						<c:forEach var="lvo" items="${lvo}">
+							<tr onclick="location.href='financialInfo?stockcode=${lvo.stockCode}'" style="cursor:pointer;">
+								<td>${lvo.stockCode}</td>
+								<td>${lvo.stockName}</td>
+								<td>${lvo.stockCurrent}</td>
+								<c:if test="${lvo.gap < 0}">
+									<td><span class="label label-danger">${lvo.gap}</span></td>
+								</c:if>
+								<c:if test="${lvo.gap == 0}">
+									<td><span class="label label-warning">${lvo.gap}</span></td>
+								</c:if>
+								<c:if test="${lvo.gap > 0}">
+									<td><span class="label label-success">${lvo.gap}</span></td>
+								</c:if>
+								<td>${lvo.totalStock * lvo.stockCurrent}</td>
+								<td>${lvo.stockVolume}</td>
+							</tr>
+						</c:forEach>
+					</tbody>			  
+
+				</table>
+				</div>              
+            </div>
+            <!-- /.box-body -->
+          </div>
+          <!-- /.box -->   
+        </div>
+      	
+      
 		<div class="col-lg-5 col-12">
           <!-- Chart -->
           <div class="box">
@@ -396,6 +500,32 @@
   <div class="control-sidebar-bg"></div>
 </div>
 <!-- ./wrapper -->
+
+
+	<%-- 
+	<!-- DataTables -->
+	<script src="${project}assets/vendor_components/datatables.net/js/jquery.dataTables.min.js"></script>
+	<script src="${project}assets/vendor_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+	 --%>
+	<!-- SlimScroll -->
+	<script src="${project}assets/vendor_components/jquery-slimscroll/jquery.slimscroll.min.js"></script>
+	
+	<!-- FastClick -->
+	<script src="${project}assets/vendor_components/fastclick/lib/fastclick.js"></script>
+	
+	<!-- Crypto_Admin App -->
+	<script src="${project}js/template.js"></script>
+	
+	<!-- Crypto_Admin for demo purposes -->
+	<script src="${project}js/demo.js"></script>
+	
+	<!-- This is data table -->
+    <script src="${project}assets/vendor_plugins/DataTables-1.10.15/media/js/jquery.dataTables.min.js"></script>
+	
+	<!-- Crypto_Admin for Data Table -->
+	<script src="${project}js/pages/data-table.js"></script>
+
+
 <script type="text/javascript">
 //[charts Javascript]e_chart_1
 

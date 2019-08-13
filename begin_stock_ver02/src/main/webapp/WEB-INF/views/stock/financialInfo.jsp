@@ -42,8 +42,8 @@
     <!-- Main content -->
     <section class="content">
 	  <div class="row">
-	  		<div class="col-lg-5 col-12">
-          <div class="box">
+	  		<div class="col-lg-6 col-12">
+          <div class="box box-solid bg-dark">
             <div class="box-header with-border">
               <h3 class="box-title">Latest Data</h3>
             </div>
@@ -76,9 +76,9 @@
           </div>
           <!-- /.box -->
 		  </div>
-		  <div class="col-lg-7 col-12">
+		  <div class="col-lg-6 col-12">
 			  <!-- Default box -->
-			  <div class="box">
+			  <div class="box box-solid bg-dark">
 				<div class="box-header with-border">
 				  <h3 class="box-title"><a href="https://finance.naver.com/item/main.nhn?code=${vo.stockcode }" style="color:lightgray;" target="_blank">${vo.stockname }<small>(${vo.stockcode })</small></a></h3>
 
@@ -125,9 +125,9 @@
 			  <!-- /.box -->
 			  
 			  <!-- Column and Line mix -->
-	          <div class="box">
+	          <div class="box box-solid bg-dark">
 	            <div class="box-header with-border">
-	              <h3 class="box-title">Average closing price and trading volume per year</h3>
+	              <h3 class="box-title">Average closing price and Trading volume per Year</h3>
 	
 	              <div class="box-tools pull-right">
 	                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
@@ -136,7 +136,7 @@
 	            </div>
 	            <div class="box-body">
 	              <div class="chart">
-	                <div id="lion_amcharts_2" style="height: 500px;"></div>
+	                <div id="lion_amcharts_2" style="height: 467px;"></div>
 	              </div>
 	            </div>
 	            <!-- /.box-body -->
@@ -144,6 +144,26 @@
 	          <!-- /.box -->
 		  </div>
 	  </div>
+		<div class="row">
+			<div class="col-lg-12 col-12">
+	          <div class="box box-solid bg-dark">
+	            <div class="box-header with-border">
+	              <h3 class="box-title">Financial Statement per Year and Quarter</h3>
+	              <div class="box-tools pull-right">
+	                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+	                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+	              </div>
+	            </div>
+	            <div class="box-body">
+					<div class="table-responsive">
+						<table class="table no-margin table-hover" style="text-align:center;">
+							${data }
+						</table>
+					</div>
+				</div>
+			  </div>
+			</div>
+		</div>
 
     </section>
     <!-- /.content -->

@@ -9,6 +9,7 @@
 	<link rel="stylesheet" href="${project}css/main.css" />
 	<script src = "${project}js/script.js"></script>
 	<meta charset="UTF-8">
+	<link rel="icon" href="${project}images/favicon2.ico">
 	<link rel="stylesheet" href="${project}assets/vendor_components/bootstrap/dist/css/bootstrap.min.css">
 	<link rel="stylesheet" href="${project}css/bootstrap-extend.css">
 	<link rel="stylesheet" href="${project}css/skins/_all-skins.css">	

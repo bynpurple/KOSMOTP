@@ -1,5 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
+<%@ include file="../include/header.jsp"%>
+	
 
 <!DOCTYPE html>
 <html lang="ko">
@@ -23,7 +25,9 @@
 <link rel="stylesheet" href="${project}css/master_style.css">
 <!-- Crypto_Admin skins -->
 <link rel="stylesheet" href="${project}css/skins/_all-skins.css">
-
+<!-- Morris charts -->
+<link rel="stylesheet" href="${project}assets/vendor_components/morris.js/morris.css">
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 <!--[if lt IE 9]>
@@ -32,15 +36,37 @@
 	<![endif]-->
 <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
 <script type="text/javascript" src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+		<!-- Morris.js charts -->
+<script src="${project}assets/vendor_components/raphael/raphael.min.js"></script>
+<script src="${project}assets/vendor_components/morris.js/morris.min.js"></script>
 <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script> -->
 <script type="text/javascript">
+
+	//가격에 ',' 작성  
+	function numberWithCommas(x) {   
+	    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+	}
+
+
 	//id = selectCompany
-	function selectCompany(c_name, c_code) {
-		alert(c_name);
-		alert(c_code);
+	function selectCompany(c_name, c_code, c_theme) {
+		//alert(c_name);
+		//alert(c_theme);
 
 		var sc = document.getElementById("selectCompany");
 		sc.style.display = 'block';
+		
+		// 아이콘 출력
+		if(c_theme == "금융업"){
+			document.getElementById("companyLogo").innerHTML = "<i class='cc ZEC mr-5' title='ZEC'><i>"; // 기업 아이콘
+		}else if(c_theme == "의약품"){
+			document.getElementById("companyLogo").innerHTML = "<i class='cc QTUM mr-5' title='QTUM'><i>"; 
+		}else if(c_theme == "전기전자"){
+			document.getElementById("companyLogo").innerHTML = "<i class='cc STRAT mr-5' title='STRAT'><i>"; 
+		}else{
+			document.getElementById("companyLogo").innerHTML = "<i class='cc BAT mr-5' title='BAT'><i>"; 
+		} 
+		
 		document.getElementById("companyName").innerHTML = c_name; 	// 기업명 
 		
 		var param = "proctype=find_memid";
@@ -48,27 +74,64 @@
 		param += "&c_code=" + c_code;
 		
 		$.ajax({
-			url : "/stock/user/selectCompany.do",
+			url : "/stock/user/selectCompany",
 			data : param,
-			type : "POST",
-			dataType : "json",
+			type : "get",
+			dataType : "json", 
 			success : function(result) {
-				console.log(result);
-				var stockname = result.stockname; // result의 id가 키니깐 - value 담기는거
-				//alert(stockname);
-				 if (stockname != null) {
+				console.log(result.chart);
+				console.log('차트의 타입확인 : '  + typeof result.chart);
 				
-				    $(".text-info").text(stockname);
-				    $("#totalstock").text(result.totalstock);
-				    $("#mkt_cap").text(result.mkt_cap);
+				var json = jQuery.parseJSON(result.chart);
+				var obj = json.mimi;
+				
+				console.dir(obj);
+				/* $.each(json.mimi, function(i, v){
+					console.log(i);
+					console.log(v);
+				}); */
+				var stockname = result.stockname; // result의 id가 키니깐 - value 담기는거
+				var chart = result.chart; // 차트값
+				//var chart2 = JSON.parse(result.chart);
+				
+				// 이름 출력 
+				if (stockname != null) {
+				    $("#stockvolume").text(numberWithCommas(result.stockvolume)); // 거래량 
+				    $("#totalstock").text(numberWithCommas(result.totalstock));	// 총 주식수 
+				    $("#mkt_cap").text(numberWithCommas(result.totalstock * result.stockcurrent));  // 시가총액 계산 
+				    var Now = new Date();  
+				    $(".today").text(Now);	// 오늘날짜
+				    $("#stockopen").text(numberWithCommas(result.stockopen));
+				    $("#stock250high").text(numberWithCommas(result.stock250high));
+				    $("#stock250low").text(numberWithCommas(result.stock250low));
 				
 				} else {
 				    alert("찾으시는 조건의 아이디가 없습니다.");
 				} 
+
+				if(result.chart != null){
+					// 그래프 출력 
+					var line = new Morris.Bar({
+					      element: 'line-chart',
+					      resize: true,
+					      data: obj,
+						  xkey: 'r_date',
+						  ykeys: ['r_close'],
+						  labels: ['Analatics'],
+						  lineWidth:3,
+						  pointFillColors: ['grey'],
+						  pointStrokeColors: ['black'],
+						  behaveLikeLine: true,
+						  fillOpacity: 0.6,
+						  lineColors: ['grey'],
+						  hideHover: 'auto'
+					    });
+				}
+				
+				
 			},
 			error : function(request, status, error) {
-				alert("code:" + request.status + "\n" + "message:"
-						+ request.responseText + "\n" + "error:" + error);
+				alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
 			}
 		});
 	}
@@ -81,7 +144,7 @@
 		var delCompany = confirm("'"+c_name +"'"+ "를 관심종목에서 삭제하겠습니까?");
 		
 		if(delCompany == true){
-			window.location="deletePro.do?c_name="+c_name+"&c_code="+c_code;
+			window.location="itemDelete?c_name="+c_name+"&c_code="+c_code;
 		}else{
 			alert("취소되었습니다.");
 		}
@@ -92,340 +155,23 @@
 	
 </script>
 
-<script>
-// 검색 자동완성 -- 안되고 있음^^
-$(function autocomplete(){
-	var stock = [${nameList}];
-	
-	$("#tags").autocomplete({
-		source: stock
-	});
-});
-</script>
-
-
 
 
 </head>
 <body class="hold-transition skin-black sidebar-mini">
 
-	<%@ include file="../include/header.jsp"%>
-
 	<!-- Site wrapper -->
 	<div class="wrapper">
 
 		<header class="main-header">
-			<!-- Logo -->
-			<a href="../../index.html" class="logo"> <!-- mini logo for sidebar mini 50x50 pixels -->
-				<b class="logo-mini"> <span class="light-logo"><img
-						src="${project}images/logo-light.png" alt="logo"></span> <span
-					class="dark-logo"><img src=".${project}images/logo-dark.png"
-						alt="logo"></span>
-			</b> <!-- logo for regular state and mobile devices --> <span
-				class="logo-lg"> <img
-					src="${project}images/logo-light-text.png" alt="logo"
-					class="light-logo"> <img
-					src="${project}images/logo-dark-text.png" alt="logo"
-					class="dark-logo">
-			</span>
-			</a>
-			<!-- Header Navbar -->
-			<nav class="navbar navbar-static-top">
-				<!-- Sidebar toggle button-->
-				<a href="#" class="sidebar-toggle" data-toggle="push-menu"
-					role="button"> <span class="sr-only">Toggle navigation</span>
-				</a>
-
-				<div class="navbar-custom-menu">
-					<ul class="nav navbar-nav">
-
-						<li class="search-box"><a class="nav-link hidden-sm-down"
-							href="javascript:void(0)"><i class="mdi mdi-magnify"></i></a>
-							<form class="app-search" style="display: none;">
-								<input type="text" class="form-control"
-									placeholder="Search &amp; enter"> 
-									<a class="srh-btn"><i class="ti-close"></i></a>
-							</form></li>
-
-						<!-- Messages -->
-						<li class="dropdown messages-menu"><a href="#"
-							class="dropdown-toggle" data-toggle="dropdown"> <i
-								class="mdi mdi-email"></i>
-						</a>
-							<ul class="dropdown-menu scale-up">
-								<li class="header">You have 5 messages</li>
-								<li>
-									<!-- inner menu: contains the actual data -->
-									<ul class="menu inner-content-div">
-										<li>
-											<!-- start message --> <a href="#">
-												<div class="pull-left">
-													<img src="${project}images/user2-160x160.jpg"
-														class="rounded-circle" alt="User Image">
-												</div>
-												<div class="mail-contnet">
-													<h4>
-														Lorem Ipsum <small><i class="fa fa-clock-o"></i>
-															15 mins</small>
-													</h4>
-													<span>Lorem ipsum dolor sit amet, consectetur
-														adipiscing elit.</span>
-												</div>
-										</a>
-										</li>
-										<!-- end message -->
-										<li><a href="#">
-												<div class="pull-left">
-													<img src="${project}images/user3-128x128.jpg"
-														class="rounded-circle" alt="User Image">
-												</div>
-												<div class="mail-contnet">
-													<h4>
-														Nullam tempor <small><i class="fa fa-clock-o"></i>
-															4 hours</small>
-													</h4>
-													<span>Curabitur facilisis erat quis metus congue
-														viverra.</span>
-												</div>
-										</a></li>
-										<li><a href="#">
-												<div class="pull-left">
-													<img src="${project}images/user4-128x128.jpg"
-														class="rounded-circle" alt="User Image">
-												</div>
-												<div class="mail-contnet">
-													<h4>
-														Proin venenatis <small><i class="fa fa-clock-o"></i>
-															Today</small>
-													</h4>
-													<span>Vestibulum nec ligula nec quam sodales rutrum
-														sed luctus.</span>
-												</div>
-										</a></li>
-										<li><a href="#">
-												<div class="pull-left">
-													<img src="${project}images/user3-128x128.jpg"
-														class="rounded-circle" alt="User Image">
-												</div>
-												<div class="mail-contnet">
-													<h4>
-														Praesent suscipit <small><i class="fa fa-clock-o"></i>
-															Yesterday</small>
-													</h4>
-													<span>Curabitur quis risus aliquet, luctus arcu nec,
-														venenatis neque.</span>
-												</div>
-										</a></li>
-										<li><a href="#">
-												<div class="pull-left">
-													<img src="${project}images/user4-128x128.jpg"
-														class="rounded-circle" alt="User Image">
-												</div>
-												<div class="mail-contnet">
-													<h4>
-														Donec tempor <small><i class="fa fa-clock-o"></i>
-															2 days</small>
-													</h4>
-													<span>Praesent vitae tellus eget nibh lacinia
-														pretium.</span>
-												</div>
-										</a></li>
-									</ul>
-								</li>
-								<li class="footer"><a href="#">See all e-Mails</a></li>
-							</ul></li>
-						<!-- Notifications -->
-						<li class="dropdown notifications-menu"><a href="#"
-							class="dropdown-toggle" data-toggle="dropdown"> <i
-								class="mdi mdi-bell"></i>
-						</a>
-							<ul class="dropdown-menu scale-up">
-								<li class="header">You have 7 notifications</li>
-								<li>
-									<!-- inner menu: contains the actual data -->
-									<ul class="menu inner-content-div">
-										<li><a href="#"> <i class="fa fa-users text-aqua"></i>
-												Curabitur id eros quis nunc suscipit blandit.
-										</a></li>
-										<li><a href="#"> <i class="fa fa-warning text-yellow"></i>
-												Duis malesuada justo eu sapien elementum, in semper diam
-												posuere.
-										</a></li>
-										<li><a href="#"> <i class="fa fa-users text-red"></i>
-												Donec at nisi sit amet tortor commodo porttitor pretium a
-												erat.
-										</a></li>
-										<li><a href="#"> <i
-												class="fa fa-shopping-cart text-green"></i> In gravida
-												mauris et nisi
-										</a></li>
-										<li><a href="#"> <i class="fa fa-user text-red"></i>
-												Praesent eu lacus in libero dictum fermentum.
-										</a></li>
-										<li><a href="#"> <i class="fa fa-user text-red"></i>
-												Nunc fringilla lorem
-										</a></li>
-										<li><a href="#"> <i class="fa fa-user text-red"></i>
-												Nullam euismod dolor ut quam interdum, at scelerisque ipsum
-												imperdiet.
-										</a></li>
-									</ul>
-								</li>
-								<li class="footer"><a href="#">View all</a></li>
-							</ul></li>
-						<!-- Tasks -->
-						<li class="dropdown tasks-menu"><a href="#"
-							class="dropdown-toggle" data-toggle="dropdown"> <i
-								class="mdi mdi-message"></i>
-						</a>
-							<ul class="dropdown-menu scale-up">
-								<li class="header">You have 6 tasks</li>
-								<li>
-									<!-- inner menu: contains the actual data -->
-									<ul class="menu inner-content-div">
-										<li>
-											<!-- Task item --> <a href="#">
-												<h3>
-													Lorem ipsum dolor sit amet <small class="pull-right">30%</small>
-												</h3>
-												<div class="progress xs">
-													<div class="progress-bar progress-bar-aqua"
-														style="width: 30%" role="progressbar" aria-valuenow="20"
-														aria-valuemin="0" aria-valuemax="100">
-														<span class="sr-only">30% Complete</span>
-													</div>
-												</div>
-										</a>
-										</li>
-										<!-- end task item -->
-										<li>
-											<!-- Task item --> <a href="#">
-												<h3>
-													Vestibulum nec ligula <small class="pull-right">20%</small>
-												</h3>
-												<div class="progress xs">
-													<div class="progress-bar progress-bar-danger"
-														style="width: 20%" role="progressbar" aria-valuenow="20"
-														aria-valuemin="0" aria-valuemax="100">
-														<span class="sr-only">20% Complete</span>
-													</div>
-												</div>
-										</a>
-										</li>
-										<!-- end task item -->
-										<li>
-											<!-- Task item --> <a href="#">
-												<h3>
-													Donec id leo ut ipsum <small class="pull-right">70%</small>
-												</h3>
-												<div class="progress xs">
-													<div class="progress-bar progress-bar-light-blue"
-														style="width: 70%" role="progressbar" aria-valuenow="20"
-														aria-valuemin="0" aria-valuemax="100">
-														<span class="sr-only">70% Complete</span>
-													</div>
-												</div>
-										</a>
-										</li>
-										<!-- end task item -->
-										<li>
-											<!-- Task item --> <a href="#">
-												<h3>
-													Praesent vitae tellus <small class="pull-right">40%</small>
-												</h3>
-												<div class="progress xs">
-													<div class="progress-bar progress-bar-yellow"
-														style="width: 40%" role="progressbar" aria-valuenow="20"
-														aria-valuemin="0" aria-valuemax="100">
-														<span class="sr-only">40% Complete</span>
-													</div>
-												</div>
-										</a>
-										</li>
-										<!-- end task item -->
-										<li>
-											<!-- Task item --> <a href="#">
-												<h3>
-													Nam varius sapien <small class="pull-right">80%</small>
-												</h3>
-												<div class="progress xs">
-													<div class="progress-bar progress-bar-red"
-														style="width: 80%" role="progressbar" aria-valuenow="20"
-														aria-valuemin="0" aria-valuemax="100">
-														<span class="sr-only">80% Complete</span>
-													</div>
-												</div>
-										</a>
-										</li>
-										<!-- end task item -->
-										<li>
-											<!-- Task item --> <a href="#">
-												<h3>
-													Nunc fringilla <small class="pull-right">90%</small>
-												</h3>
-												<div class="progress xs">
-													<div class="progress-bar progress-bar-primary"
-														style="width: 90%" role="progressbar" aria-valuenow="20"
-														aria-valuemin="0" aria-valuemax="100">
-														<span class="sr-only">90% Complete</span>
-													</div>
-												</div>
-										</a>
-										</li>
-										<!-- end task item -->
-									</ul>
-								</li>
-								<li class="footer"><a href="#">View all tasks</a></li>
-							</ul></li>
-						<!-- User Account -->
-						<li class="dropdown user user-menu"><a href="#"
-							class="dropdown-toggle" data-toggle="dropdown"> <img
-								src="${project}images/user5-128x128.jpg"
-								class="user-image rounded-circle" alt="User Image">
-						</a>
-							<ul class="dropdown-menu scale-up">
-								<!-- User image -->
-								<li class="user-header"><img
-									src="${project}images/user5-128x128.jpg"
-									class="float-left rounded-circle" alt="User Image">
-
-									<p>
-										Romi Roy <small class="mb-5">jb@gmail.com</small> <a href="#"
-											class="btn btn-danger btn-sm btn-rounded">View Profile</a>
-									</p></li>
-								<!-- Menu Body -->
-								<li class="user-body">
-									<div class="row no-gutters">
-										<div class="col-12 text-left">
-											<a href="#"><i class="ion ion-person"></i> My Profile</a>
-										</div>
-										<div class="col-12 text-left">
-											<a href="#"><i class="ion ion-email-unread"></i> Inbox</a>
-										</div>
-										<div class="col-12 text-left">
-											<a href="#"><i class="ion ion-settings"></i> Setting</a>
-										</div>
-										<div role="separator" class="divider col-12"></div>
-										<div class="col-12 text-left">
-											<a href="#"><i class="ti-settings"></i> Account Setting</a>
-										</div>
-										<div role="separator" class="divider col-12"></div>
-										<div class="col-12 text-left">
-											<a href="#"><i class="fa fa-power-off"></i> Logout</a>
-										</div>
-									</div> <!-- /.row -->
-								</li>
-							</ul></li>
-						<!-- Control Sidebar Toggle Button -->
-						<li><a href="#" data-toggle="control-sidebar"><i
-								class="fa fa-cog fa-spin"></i></a></li>
-					</ul>
-				</div>
-			</nav>
+			<%@ include file="../include/main_header.jsp" %>
 		</header>
-  <aside class="main-sidebar">
-    <%@ include file="side_menu.jsp" %>
-  </aside>
+		  
+		<aside class="main-sidebar">
+		  <%@ include file="side_menu.jsp" %>
+		</aside>
+  
+  
 
 <!-- ====================main content=========================== -->
 <form action="interestedItems.do">
@@ -456,19 +202,19 @@ $(function autocomplete(){
 	
 							<!-- 검색 -->
 							<div id="example1_filter" class="dataTables_filter">
-								<label>Search: 
+								<label>
 									<input type="text" name="searchInput" value="" id="tags" onkeyup="autocomplete();"> 
-									<input type="submit" id="searchButton" value="">
+									<input type="submit" id="searchButton" value="Search" class="tst2 btn btn-warning" style="width:60; padding:0px;">
 								</label>
 							</div>
 	
 							<div align="left" style="padding-top:25px;"> * 상세내역은 종목명 클릭</div>	
-							<table id="example1" class="table table-bordered table-striped dataTable" style="cursor: pointer;" role="grid" aria-describedby="example1_info">
+							<table id="example1" class="table table-bordered table-striped dataTable" style="cursor: pointer;  width: 100%;" role="grid" aria-describedby="example1_info">
 								<thead>
-									<tr role="row">
-										<th>종목명</th>
+									<tr role="row" style="font-weight:bold; font-size:15px; color:white; background-color:black;">
+										<th style="width:300px;">종목명</th>
 										<th>현재가</th>
-										<th>대비</th>
+										<th>전일대비</th>
 										<th>등락률</th>
 										<th>거래량</th>
 										<th>시가</th>
@@ -487,43 +233,64 @@ $(function autocomplete(){
 											<tr role="row" class="media-list media-list-hover media-list-divided odd">
 												
 												<c:if test="${item.stocktheme == '금융업'}">
-													<td onclick="selectCompany('${item.stockname}', '${item.stockcode}');">
+													<td onclick="selectCompany('${item.stockname}', '${item.stockcode}', '${item.stocktheme}');">
 													<i class="cc ZEC mr-5" title="ZEC" style="witdh:30px; height:30px;"></i>${item.stockname}(${item.stockcode})</td>
 												</c:if>
 												<c:if test="${item.stocktheme == '의약품'}">
-													<td onclick="selectCompany('${item.stockname}', '${item.stockcode}');">
+													<td onclick="selectCompany('${item.stockname}', '${item.stockcode}', '${item.stocktheme}');">
 													<i class="cc QTUM mr-5" title="QTUM" style="witdh:30px; height:30px;"></i>${item.stockname}(${item.stockcode})</td>
 												</c:if>
 												<c:if test="${item.stocktheme == '전기전자'}">
-													<td onclick="selectCompany('${item.stockname}', '${item.stockcode}');">
+													<td onclick="selectCompany('${item.stockname}', '${item.stockcode}', '${item.stocktheme}');">
 													<i class="cc STRAT mr-5" title="STRAT" style="witdh:30px; height:30px;"></i>${item.stockname}(${item.stockcode})</td>
 												</c:if>
 												<c:if test="${item.stocktheme != '금융업' and item.stocktheme !='의약품' and item.stocktheme !='전기전자'}">
-													<td onclick="selectCompany('${item.stockname}', '${item.stockcode}');">
+													<td onclick="selectCompany('${item.stockname}', '${item.stockcode}', '${item.stocktheme}');">
 													<i class="cc BAT mr-5" title="BAT" style="witdh:30px; height:30px;"></i>${item.stockname}(${item.stockcode})</td>
 												</c:if>
 												
+												<!-- 현재가 -->
+												<td><div><fmt:formatNumber value="${item.stockcurrent}" pattern="#,###" /></div></td> 
 												
-												<td><span class="tst3 btn btn-success"><fmt:formatNumber value="${item.stockcurrent}" pattern="#,###" /></span></td>
-												<td>${item.gap}</td>
-												<td>${item.gap}</td>
-												<td><span class="tst4 btn btn-danger"><fmt:formatNumber value="${item.stockvolume}" pattern="#,###" /></span></td>
+												<!-- 대비 (전일종가와 오늘 종가의 차 -->
+												<c:if test="${item.p_step > 0}">
+													<td><i class="mdi mdi-arrow-up-bold"> ${item.p_step}</i></td> 
+												</c:if>
+												<c:if test="${item.p_step < 0}">
+													<td><i class="mdi mdi-arrow-down-bold"> ${item.p_step}</i></td>
+												</c:if>
+												<c:if test="${item.p_step == 0}">
+													<td>${item.p_step}</td>
+												</c:if>
+												
+												<!-- 등락률 -->
+												<c:if test="${item.gap > 0}">
+													<td><i class="mdi mdi-arrow-up-bold"></i> ${item.p_step}</td> <!-- 대비 (전일종가와 오늘 종가의 차 -->
+												</c:if>
+												<c:if test="${item.gap < 0}">
+													<td><i class="mdi mdi-arrow-down-bold"> ${item.p_step}</i></td>
+												</c:if>
+												<c:if test="${item.gap == 0}">
+													<td>${item.p_step}</td>
+												</c:if>
+												
+												<td><fmt:formatNumber value="${item.stockvolume}" pattern="#,###" /></td> <!-- 거래량 -->
 												<td><fmt:formatNumber value="${item.stockopen}" pattern="#,###" /></td>
 												<td><fmt:formatNumber value="${item.stockhigh}" pattern="#,###" /></td>
 												<td><fmt:formatNumber value="${item.stocklow}" pattern="#,###" /></td>
-												<td>매도호가</td>
-												<td>매도잔량</td>
-												<td>매수호가</td>
-												<td>매수잔량</td>
-												<td><img src="${project}delete2.png" style="width:28px; height:28px; align:center;" onclick="clickDelete('${item.stockname}', '${item.stockcode}')"></td>
+												<td>-</td>
+												<td>-</td>
+												<td>-</td>
+												<td>-</td>
+												<td><span class="glyphicon glyphicon-trash" onclick="clickDelete('${item.stockname}', '${item.stockcode}')"></span></td>
 											</tr>
 										</c:forEach>
 									</c:if>
 	
 									<!-- 주식리스트가 없으면  -->
-									<c:if test="${cnt < 0}">
+									<c:if test="${cnt <= 0}">
 										<tr>
-											<td colspan="12" align="center">관심 종목을 선택해주세요!</td>
+											<td colspan="13" align="center">관심 종목을 선택해주세요!</td>
 										</tr>
 									</c:if>
 								</tbody>
@@ -547,11 +314,11 @@ $(function autocomplete(){
 									<!-- 블록내의 페이지 번호  forEach문 돌리기-->
 									<c:forEach var="i" begin="${startPage}" end="${endPage}">
 										<c:if test="${i == currentPage}">
-											<span><b>${i}</b></span>
+											<span class="paginate_button current"><b>${i}</b></span>
 										</c:if>
 	
 										<c:if test="${i != currentPage}">
-											<span><b> <a href="interestedItems.do?${addParam}&pageNum=${i}" class="paginate_button current"
+											<span><b> <a href="interestedItems.do?${addParam}&pageNum=${i}" class="paginate_button"
 													aria-controls="example1" data-dt-idx="${i}" tabindex="0"> ${i}</a></b>
 											</span>
 										</c:if>
@@ -578,14 +345,8 @@ $(function autocomplete(){
 <style>
 #table2 td, #table2 th {
 	padding: 15px 15px 5px 15px;
-	font-weight: bold;
 }
 
-#searchButton {
-	background-image: url('/stock/resources/images/top_icon_search.png');
-	width: 40px;
-	height: 40px;
-}
 
 #example1 tbody tr:hover {
    /*  outline: 0; */
@@ -595,6 +356,19 @@ $(function autocomplete(){
    /*  opacity:0.4;
     transform:scale(1); */
 }
+
+
+#searchButton {
+	background-image: url('/stock/resources/searchIcon.PNG');
+	width: 25px;
+	height: 25px;
+}
+
+
+#line-chart{
+  min-height: 250px;
+}
+
 </style>
 
 
@@ -607,21 +381,22 @@ $(function autocomplete(){
 			<div class="table-responsive" style="overflow-x:hidden;">
 
 				<div class="row">
-					<div class="col-md-8 col-12">
+					<div class="col-md-12 col-12">
 					
 						<div class="box-body">	<!-- 글자안내칸 -->
-							<div class="media align-items-center">
-								<h3 class="no-margin text-bold" style="color: white; color: white; margin-bottom: 30px; margin-top: 20px;" id="companyName"></h3>
+							<div class="media align-items-center" style="padding-bottom:45px;">
+								<div id="companyLogo"></div>
+								<div><h3 class="no-margin text-bold" style="color: white;" id="companyName"></h3></div>
 								<!-- 선택기업이름 삽입  -->
 							</div>
 
-							<table style="padding: 5px; font-weight: bold;" id="table2">
+							<table style="padding: 5px; witdh:100%; border=1px;" id="table2">
+								<tr><td colspan="4">기준일자 : <span class="text-info today"></span></td></tr>
 								<tr>
 									<th><span class="text-yellow">250일 최고</span></th>
 									<td>
-										<span class="text-info">$0.04</span> 
-										<span class="text-success">+1.35%</span> 
-										<span class="text-info">18/09/02</span>
+										<span class="text-success" id="stock250high"></span> 원
+										<!-- <span class="text-success">+1.35%</span>  -->
 									</td>
 									<th><span class="text-yellow">액면가</span></th>
 									<td><span class="text-success">500원</span></td>
@@ -633,9 +408,8 @@ $(function autocomplete(){
 								<tr>
 									<th><span class="text-yellow">250일 최저</span></th>
 									<td>
-										<span class="text-info">$0.04</span> 
-										<span class="text-success">+1.35%</span> 
-										<span class="text-info">18/09/02</span>
+										<span class="text-success" id="stock250low"></span> 원  
+										<!-- span class="text-info">+1.35%</span>  -->
 									</td>
 									<th><span class="text-yellow">자본금</span></th>
 									<td><span class="text-success">355억</span></td>
@@ -645,179 +419,60 @@ $(function autocomplete(){
 									<td><span class="text-success">--</span></td>
 								</tr>
 								<tr>
-									<th><span class="text-yellow">외국인보유</span></th>
+									<th><span class="text-yellow">거래량</span></th>
 									<td>
-										<span class="text-info">7.62%</span> 
-										<span class="text-success"> -- </span> 
-										<span class="text-info">5,141(천)</span>
+										<span class="text-success" id=stockvolume></span> 건
 									</td>
 									<th><span class="text-yellow">주식수</span></th>
-									<td><span class="text-success" id=totalstock><fmt:formatNumber value="" pattern="#,###" /></span></td>
+									<td><span class="text-success" id=totalstock></span></td>
 									<th><span class="text-yellow">신용비율</span></th>
 									<td><span class="text-success">2.81%</span></td>
 									<th><span class="text-yellow">결산월</span></th>
 									<td><span class="text-success">12월</span></td>
 								</tr>
+								
+								<tr>
+									<th><span class="text-yellow">체결가</span></th>
+									<td>
+										<span class="text-success" id=stockopen></span> 원
+									</td>
+									<th><span class="text-yellow">전일대비</span></th>
+									<td><span class="text-success"><fmt:formatNumber value="" pattern="#,###" /></span></td>
+									<th><span class="text-yellow">체결량</span></th>
+									<td><span class="text-success">2.81%</span></td>
+									<th><span class="text-yellow">체결강도</span></th>
+									<td><span class="btn btn-danger">500.00</span></td>
+								</tr>
 							</table>
 
-						</div>
-
-
-						<!-- 표 -->
-						<div class="box-body">
-							<div class="table-responsive">
-								<div id="dataTable_crypto_wrapper" class="dataTables_wra<!-- pper no-footer">
-									<div id="dataTable_crypto_filter" class="dataTables_filter"></div>
-									<table class="table table-bordered dataTable no-footer table-striped" id="dataTable_crypto" role="grid"
-										aria-describedby="dataTable_crypto_info">
-										<thead>
-											<tr role="row">
-												<th>시간</th>
-												<th>체결가</th>
-												<th>전일대비</th>
-												<th>체결량</th>
-												<th>체결강도</th>
-											</tr>
-										</thead>
-										<tbody>
-											<tr role="row" class="odd">
-												<td><p class="text-yellow hover-warning">10:59:41</p></td>
-												<td><p>31,200</p></td>
-												<td><p>13,350</p></td>
-												<td><p style="color: red">1</p></td>
-												<td>
-													<label class="label label-danger">
-													<i class="fa fa-chevron-<!-- down"></i>500.00</label>
-												</td>
-												<!-- <canvas width="48" height="19" style="display: inline-block; width: 48px; height: 19px; vertical-align: top;"></canvas> -->
-											</tr>
-										</tbody>
-									</table>
-								</div>
-							</div>
 						</div>
 
 					</div>
 
 
 					<!-- 그래프  -->
-					<div class="col-md-4 col-12">
-						<div class="box-body" style="padding-top: 80px;">
-							
-							
-				
-							<div class="chart-responsive">
-             					 <div class="chart" id="line-chart" style="height: 300px; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
-									<svg height="300" version="1.1" width="766" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
-										 style="overflow: hidden; position: relative; top: -0.5px;">
-										 
-									<desc style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);">Created with Raphaël 2.2.0</desc>
-									<defs style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></defs>
-									
-									<text x="49.578125" y="259" text-anchor="end" font-family="sans-serif" font-size="12px" stroke="none" fill="#888888" 
-										style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); text-anchor: end; font-family: sans-serif; font-size: 12px; font-weight: normal;" font-weight="normal">
-									<tspan dy="4" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);">0</tspan>
-									</text>
-									
-									<path fill="none" stroke="#aaaaaa" d="M62.078125,259H741.5" stroke-width="0.5" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></path>
-									<text x="49.578125" y="200.5" text-anchor="end" font-family="sans-serif" font-size="12px" stroke="none" fill="#888888" 
-									style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); text-anchor: end; font-family: sans-serif; font-size: 12px; font-weight: normal;" font-weight="normal">
-									<tspan dy="4" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);">22,500</tspan>
-									</text>
-									
-									<path fill="none" stroke="#aaaaaa" d="M62.078125,200.5H741.5" stroke-width="0.5" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></path>
-									<text x="49.578125" y="142" text-anchor="end" font-family="sans-serif" font-size="12px" stroke="none" fill="#888888" 
-									style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); text-anchor: end; font-family: sans-serif; font-size: 12px; font-weight: normal;" font-weight="normal">
-									<tspan dy="4" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);">45,000</tspan>
-									</text>
-									
-									<path fill="none" stroke="#aaaaaa" d="M62.078125,142H741.5" stroke-width="0.5" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></path>
-									<text x="49.578125" y="83.5" text-anchor="end" font-family="sans-serif" font-size="12px" stroke="none" fill="#888888" 
-									style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); text-anchor: end; font-family: sans-serif; font-size: 12px; font-weight: normal;" font-weight="normal">
-									<tspan dy="4" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);">67,500</tspan>
-									</text>
-									
-									<path fill="none" stroke="#aaaaaa" d="M62.078125,83.5H741.5" stroke-width="0.5" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></path>
-									<text x="49.578125" y="25" text-anchor="end" font-family="sans-serif" font-size="12px" stroke="none" fill="#888888" 
-									style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); text-anchor: end; font-family: sans-serif; font-size: 12px; font-weight: normal;" font-weight="normal">
-									<tspan dy="4" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);">90,000</tspan>
-									</text>
-									
-									<path fill="none" stroke="#aaaaaa" d="M62.078125,25H741.5" stroke-width="0.5" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></path>
-									<text x="741.5" y="271.5" text-anchor="middle" font-family="sans-serif" font-size="12px" stroke="none" fill="#888888" 
-									style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); text-anchor: middle; font-family: sans-serif; font-size: 12px; font-weight: normal;" font-weight="normal" transform="matrix(1,0,0,1,0,8)">
-									<tspan dy="4" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);">2016</tspan>
-									</text>
-									
-									<text x="666.0546138195923" y="271.5" text-anchor="middle" font-family="sans-serif" font-size="12px" stroke="none" fill="#888888" 
-									style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); text-anchor: middle; font-family: sans-serif; font-size: 12px; font-weight: normal;" font-weight="normal" transform="matrix(1,0,0,1,0,8)">
-									<tspan dy="4" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);">2015</tspan>
-									</text>
-									
-									<text x="590.6092276391846" y="271.5" text-anchor="middle" font-family="sans-serif" font-size="12px" stroke="none" fill="#888888" 
-									style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); text-anchor: middle; font-family: sans-serif; font-size: 12px; font-weight: normal;" font-weight="normal" transform="matrix(1,0,0,1,0,8)">
-									<tspan dy="4" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);">2014</tspan>
-									</text>
-									
-									<text x="515.1638414587769" y="271.5" text-anchor="middle" font-family="sans-serif" font-size="12px" stroke="none" fill="#888888" 
-									style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); text-anchor: middle; font-family: sans-serif; font-size: 12px; font-weight: normal;" font-weight="normal" transform="matrix(1,0,0,1,0,8)">
-									<tspan dy="4" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);">2013</tspan>
-									</text>
-									
-									<text x="439.5117555902038" y="271.5" text-anchor="middle" font-family="sans-serif" font-size="12px" stroke="none" fill="#888888" 
-									style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); text-anchor: middle; font-family: sans-serif; font-size: 12px; font-weight: normal;" font-weight="normal" transform="matrix(1,0,0,1,0,8)">
-									<tspan dy="4" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);">2012</tspan>
-									</text>
-									
-									<text x="364.06636940979615" y="271.5" text-anchor="middle" font-family="sans-serif" font-size="12px" stroke="none" fill="#888888" 
-									style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); text-anchor: middle; font-family: sans-serif; font-size: 12px; font-weight: normal;" font-weight="normal" transform="matrix(1,0,0,1,0,8)">
-									<tspan dy="4" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);">2011</tspan>
-									</text>
-									
-									<text x="288.62098322938846" y="271.5" text-anchor="middle" font-family="sans-serif" font-size="12px" stroke="none" fill="#888888" 
-									style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); text-anchor: middle; font-family: sans-serif; font-size: 12px; font-weight: normal;" font-weight="normal" transform="matrix(1,0,0,1,0,8)">
-									<tspan dy="4" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);">2010</tspan>
-									</text>
-									
-									<text x="213.17559704898082" y="271.5" text-anchor="middle" font-family="sans-serif" font-size="12px" stroke="none" fill="#888888" 
-									style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); text-anchor: middle; font-family: sans-serif; font-size: 12px; font-weight: normal;" font-weight="normal" transform="matrix(1,0,0,1,0,8)">
-									<tspan dy="4" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);">2009</tspan>
-									</text>
-									
-									<text x="137.52351118040767" y="271.5" text-anchor="middle" font-family="sans-serif" font-size="12px" stroke="none" fill="#888888" 
-									style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); text-anchor: middle; font-family: sans-serif; font-size: 12px; font-weight: normal;" font-weight="normal" transform="matrix(1,0,0,1,0,8)">
-									<tspan dy="4" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);">2008</tspan>
-									</text>
-									
-									<text x="62.078125" y="271.5" text-anchor="middle" font-family="sans-serif" font-size="12px" stroke="none" fill="#888888" 
-									style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); text-anchor: middle; font-family: sans-serif; font-size: 12px; font-weight: normal;" font-weight="normal" transform="matrix(1,0,0,1,0,8)">
-									<tspan dy="4" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);">2007</tspan>
-									</text>
-									
-									<path fill="none" stroke="#1e88e5" d="M62.078125,218.7286C80.93947154510192,192.0136,118.66216463530574,118.34964685362519,137.52351118040767,111.86860000000001C156.43653264755096,105.36979685362519,194.26257558183752,176.28256675786594,213.17559704898082,166.8092C232.03694359408274,157.36171675786593,269.75963668428653,43.152550000000005,288.62098322938846,
-									36.18520000000001C307.4823297744904,29.217850000000006,345.20502286469423,88.252475,364.06636940979615,111.0704C382.9277159548981,133.888325,420.65040904510187,224.89515266757866,439.5117555902038,218.7286C458.42477705734706,212.54515266757866,496.25081999163365,
-									74.61463337893296,515.1638414587769,61.6704C534.0251880038788,48.76153337893297,571.7478810940827,102.45562500000001,590.6092276391846,115.31620000000001C609.4705741842865,128.17677500000002,647.1932672744904,150.684975,666.0546138195923,164.555C684.9159603646942,178.425025,722.6386534548981,210.84605,741.5,226.2764" stroke-opacity="1" stroke-width="3" 
-									style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></path>
-									
-									<circle cx="62.078125" cy="218.7286" r="4" fill="#1e88e5" stroke="#ffffff" fill-opacity="1" stroke-width="1" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></circle>
-									<circle cx="137.52351118040767" cy="111.86860000000001" r="4" fill="#1e88e5" stroke="#ffffff" fill-opacity="1" stroke-width="1" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></circle>
-									<circle cx="213.17559704898082" cy="166.8092" r="4" fill="#1e88e5" stroke="#ffffff" fill-opacity="1" stroke-width="1" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></circle>
-									<circle cx="288.62098322938846" cy="36.18520000000001" r="4" fill="#1e88e5" stroke="#ffffff" fill-opacity="1" stroke-width="1" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></circle>
-									<circle cx="364.06636940979615" cy="111.0704" r="4" fill="#1e88e5" stroke="#ffffff" fill-opacity="1" stroke-width="1" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></circle>
-									<circle cx="439.5117555902038" cy="218.7286" r="4" fill="#1e88e5" stroke="#ffffff" fill-opacity="1" stroke-width="1" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></circle>
-									<circle cx="515.1638414587769" cy="61.6704" r="4" fill="#1e88e5" stroke="#ffffff" fill-opacity="1" stroke-width="1" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></circle>
-									<circle cx="590.6092276391846" cy="115.31620000000001" r="4" fill="#1e88e5" stroke="#ffffff" fill-opacity="1" stroke-width="1" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></circle>
-									<circle cx="666.0546138195923" cy="164.555" r="4" fill="#1e88e5" stroke="#ffffff" fill-opacity="1" stroke-width="1" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></circle>
-									<circle cx="741.5" cy="226.2764" r="4" fill="#1e88e5" stroke="#ffffff" fill-opacity="1" stroke-width="1" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></circle>
-									</svg>
-									
-									<div class="morris-hover morris-default-style" style="display: none;"></div>
-								</div>
-							</div>
+					<div class="col-md-12 col-12">
 						
-						<!-- 그래프 끝 -->	
+						<div class="box-body" style="padding-top: 30px;">
+							
+							<div class="box-header with-border">
+				              	<h3 class="box-title">가장 최근 10일  종가 기록 그래프</h3>
+				
+				              <div class="box-tools pull-right">
+				                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+				                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+				              </div>
+				            </div>
+				            
+				           <div class="box-body chart-responsive">
+				              <div class="chart" id="line-chart" style="height: 300px;"></div>
+				            </div>
+							
+							
 						</div>
-					</div>
+						
+					</div><!-- 그래프 끝 -->
+					
 				</div> <!-- 선택기업 row  -->
 			</div>
 		</div>
@@ -826,195 +481,15 @@ $(function autocomplete(){
 </div>
 </section>
 
-
 </div>
 </form>
 
+</div>
+
 		<!-- /.content-wrapper -->
-
-
-		<footer class="main-footer">
-			<div class="pull-right d-none d-sm-inline-block">
-				<ul
-					class="nav nav-primary nav-dotted nav-dot-separated justify-content-center justify-content-md-end">
-					<li class="nav-item"><a class="nav-link"
-						href="javascript:void(0)">FAQ</a></li>
-					<li class="nav-item"><a class="nav-link" href="#">Purchase
-							Now</a></li>
-				</ul>
-			</div>
-			&copy; 2019 <a href="https://www.multipurposethemes.com/">Multi-Purpose
-				Themes</a>. All Rights Reserved.
-		</footer>
-		<!-- Control Sidebar -->
-		<aside class="control-sidebar control-sidebar-dark">
-			<!-- Create the tabs -->
-			<ul class="nav nav-tabs nav-justified control-sidebar-tabs">
-				<li class="nav-item"><a href="#control-sidebar-home-tab"
-					data-toggle="tab"><i class="fa fa-home"></i></a></li>
-				<li class="nav-item"><a href="#control-sidebar-settings-tab"
-					data-toggle="tab"><i class="fa fa-cog fa-spin"></i></a></li>
-			</ul>
-			<!-- Tab panes -->
-			<div class="tab-content">
-				<!-- Home tab content -->
-				<div class="tab-pane" id="control-sidebar-home-tab">
-					<h3 class="control-sidebar-heading">Recent Activity</h3>
-					<ul class="control-sidebar-menu">
-						<li><a href="javascript:void(0)"> <i
-								class="menu-icon fa fa-birthday-cake bg-red"></i>
-
-								<div class="menu-info">
-									<h4 class="control-sidebar-subheading">Admin Birthday</h4>
-
-									<p>Will be July 24th</p>
-								</div>
-						</a></li>
-						<li><a href="javascript:void(0)"> <i
-								class="menu-icon fa fa-user bg-yellow"></i>
-
-								<div class="menu-info">
-									<h4 class="control-sidebar-subheading">Jhone Updated His
-										Profile</h4>
-
-									<p>New Email : jhone_doe@demo.com</p>
-								</div>
-						</a></li>
-						<li><a href="javascript:void(0)"> <i
-								class="menu-icon fa fa-envelope-o bg-light-blue"></i>
-
-								<div class="menu-info">
-									<h4 class="control-sidebar-subheading">Disha Joined
-										Mailing List</h4>
-
-									<p>disha@demo.com</p>
-								</div>
-						</a></li>
-						<li><a href="javascript:void(0)"> <i
-								class="menu-icon fa fa-file-code-o bg-green"></i>
-
-								<div class="menu-info">
-									<h4 class="control-sidebar-subheading">Code Change</h4>
-
-									<p>Execution time 15 Days</p>
-								</div>
-						</a></li>
-					</ul>
-					<!-- /.control-sidebar-menu -->
-
-					<h3 class="control-sidebar-heading">Tasks Progress</h3>
-					<ul class="control-sidebar-menu">
-						<li><a href="javascript:void(0)">
-								<h4 class="control-sidebar-subheading">
-									Web Design <span class="label label-danger pull-right">40%</span>
-								</h4>
-
-								<div class="progress progress-xxs">
-									<div class="progress-bar progress-bar-danger"
-										style="width: 40%"></div>
-								</div>
-						</a></li>
-						<li><a href="javascript:void(0)">
-								<h4 class="control-sidebar-subheading">
-									Update Data <span class="label label-success pull-right">75%</span>
-								</h4>
-
-								<div class="progress progress-xxs">
-									<div class="progress-bar progress-bar-success"
-										style="width: 75%"></div>
-								</div>
-						</a></li>
-						<li><a href="javascript:void(0)">
-								<h4 class="control-sidebar-subheading">
-									Order Process <span class="label label-warning pull-right">89%</span>
-								</h4>
-
-								<div class="progress progress-xxs">
-									<div class="progress-bar progress-bar-warning"
-										style="width: 89%"></div>
-								</div>
-						</a></li>
-						<li><a href="javascript:void(0)">
-								<h4 class="control-sidebar-subheading">
-									Development <span class="label label-primary pull-right">72%</span>
-								</h4>
-
-								<div class="progress progress-xxs">
-									<div class="progress-bar progress-bar-primary"
-										style="width: 72%"></div>
-								</div>
-						</a></li>
-					</ul>
-					<!-- /.control-sidebar-menu -->
-
-				</div>
-				<!-- /.tab-pane -->
-				<!-- Stats tab content -->
-				<div class="tab-pane" id="control-sidebar-stats-tab">Stats Tab
-					Content</div>
-				<!-- /.tab-pane -->
-				<!-- Settings tab content -->
-				<div class="tab-pane" id="control-sidebar-settings-tab">
-					<form method="post">
-						<h3 class="control-sidebar-heading">General Settings</h3>
-
-						<div class="form-group">
-							<input type="checkbox" id="report_panel" class="chk-col-grey">
-							<label for="report_panel" class="control-sidebar-subheading ">Report
-								panel usage</label>
-
-							<p>general settings information</p>
-						</div>
-						<!-- /.form-group -->
-
-						<div class="form-group">
-							<input type="checkbox" id="allow_mail" class="chk-col-grey">
-							<label for="allow_mail" class="control-sidebar-subheading ">Mail
-								redirect</label>
-
-							<p>Other sets of options are available</p>
-						</div>
-						<!-- /.form-group -->
-
-						<div class="form-group">
-							<input type="checkbox" id="expose_author" class="chk-col-grey">
-							<label for="expose_author" class="control-sidebar-subheading ">Expose
-								author name</label>
-
-							<p>Allow the user to show his name in blog posts</p>
-						</div>
-						<!-- /.form-group -->
-
-						<h3 class="control-sidebar-heading">Chat Settings</h3>
-
-						<div class="form-group">
-							<input type="checkbox" id="show_me_online" class="chk-col-grey">
-							<label for="show_me_online" class="control-sidebar-subheading ">Show
-								me as online</label>
-						</div>
-						<!-- /.form-group -->
-
-						<div class="form-group">
-							<input type="checkbox" id="off_notifications"
-								class="chk-col-grey"> <label for="off_notifications"
-								class="control-sidebar-subheading ">Turn off
-								notifications</label>
-						</div>
-						<!-- /.form-group -->
-
-						<div class="form-group">
-							<label class="control-sidebar-subheading"> <a
-								href="javascript:void(0)" class="text-red margin-r-5"><i
-									class="fa fa-trash-o"></i></a> Delete chat history
-							</label>
-						</div>
-						<!-- /.form-group -->
-					</form>
-				</div>
-				<!-- /.tab-pane -->
-			</div>
-		</aside>
-		<!-- /.control-sidebar -->
+	<footer class="main-footer">
+		<%@ include file="../include/main_footer.jsp" %>
+	</footer>
 
 		<!-- Add the sidebar's background. This div must be placed immediately after the control sidebar -->
 		<div class="control-sidebar-bg"></div>
@@ -1035,5 +510,21 @@ $(function autocomplete(){
 
 		<!-- Crypto_Admin for demo purposes -->
 		<script src="${project}js/demo.js"></script>
+		
+		<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+        <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+	    <script>
+	      // 검색 자동완성 -- 안되고 있음^^
+	      $(function autocomplete(){
+	         var stock = [${list}];
+	         
+	         $("#tags").autocomplete({
+	            source: stock
+	         });
+	      });
+	    </script>
+		
+		
+		
 </body>
 </html>

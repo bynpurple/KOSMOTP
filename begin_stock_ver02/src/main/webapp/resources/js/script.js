@@ -178,3 +178,114 @@ function modifyPwd() {
 	var password = document.findPwdChkForm.password.value;
 	
 }
+
+function fchk() {
+    var chk_obj = document.getElementsByName("themes");
+    var chk_leng = chk_obj.length;
+    var checked = 0;
+    for (i=0; i < chk_leng; i++) {
+        if (chk_obj[i].checked == true) { 
+            checked += 1;
+        }
+    }
+    if (checked < 2 ) {
+        alert("항목을 2개 이상 선택해주세요");
+        return false;
+    } 
+    
+    if (checked > 4 ) {
+        alert("항목을 4개 이하 선택해주세요");
+        return false;
+    } 
+} 
+
+function transferMoney(){
+	var withdraw = document.transfer.withdraw.value; //출금계좌
+	var possible_price = document.transfer.possible_price.value; //이체가능금액
+	var account_pwd = document.transfer.account_pwd.value;	//출금 계좌 비번
+	var transfer_price = document.transfer.transfer_price.value; //이체 금액 
+	var deposit_account = document.transfer.deposit_account.value; //입금 계좌 번호
+	var transferMessage = document.transfer.transferMessage.value; //입금 계좌 표시
+	var withdrawMessage = document.transfer.withdrawMessage.value; //출금 계좌 표시
+	var sum = (possible_price)-(transfer_price);
+	
+	var reg1 =/^[0-9]{0,9}$/;
+	var reg2 =/^[가-힣]{0,8}$/;
+	
+	var result1 = reg1.test(account_pwd);
+	var result2 = reg1.test(transfer_price);
+	var result3 = reg1.test(deposit_account);
+	var result4 = reg2.test(transferMessage);
+	var result5 = reg2.test(withdrawMessage);
+	
+	if(account_pwd == ""){
+		alert("비밀번호를 입력해주세요");
+	}else if(transfer_price == ""){
+	    alert("이체 금액을 입력해주세요");
+	}else if(deposit_account == ""){
+		alert("입금 계좌 번호를 입력하세요");
+	}else{
+		if(!result1){
+			alert("계좌 비밀번호는 숫자입니다");
+			account_pwd = "";
+			document.transfer.account_pwd.focus();
+			return false;
+		}
+		if(!result2){
+			alert("이체 금액이 잘못되었습니다.");
+			transfer_price = "";
+			document.transfer.transfer_price.focus();
+			return false;
+		}
+		if(!result3){
+			alert("입금 계좌가 잘못되었습니다.");
+			deposit_account = "";
+			document.transfer.deposit_account.focus();
+			return false;
+		}
+		if(!result4){
+			alert("입금 계좌 표시가 잘못되었습니다");
+			transferMessage = "";
+			document.transfer.transferMessage.focus();
+			return false;
+		}
+		if(!result5){
+			alert("출금 계좌 표시가 잘못되었습니다.");
+			withdrawMessage = "";
+			document.transfer.withdrawMessage.focus();
+			return false;
+		}
+		
+		if(document.transfer.accountChk.value==0){
+			alert("비밀번호를 확인해주세요.");
+			return false;
+		}
+		
+		var url = "transferChk?transfer_price=" + transfer_price + "&deposit_account=" + deposit_account + "&withdraw=" + withdraw + "&transferMessage=" + transferMessage + "&withdrawMessage=" + withdrawMessage +"&sum=" + sum;
+		window.open(url,"이체 정보 확인","menubar=no, width=500, height=300");
+	}
+}
+
+function searchAccount(){
+	var withdraw = document.transfer.withdraw.value; //출금 계좌 번호
+	var account_pwd = document.transfer.account_pwd.value;	//출금 계좌 비번
+	
+	var url ="accountSearch?withdraw=" + withdraw +"&account_pwd=" + account_pwd;
+	window.open(url,"accountSearch","menubar=no , width=500, height=250");
+}
+//테마 선택 제한
+function checkChooseThemes(frm){
+	var sum = 0;
+	var count = frm.themes.length;
+	for(var i=0; i < count; i++ ){
+       if(frm.themes[i].checked == true ){
+	    sum += 1;
+		}
+	} 
+	alert("선택되어진 체크박스의 갯수는 " + sum + "개입니다." );
+	return false;
+}
+
+function returnNotice() {
+	window.history.go(-1);
+}

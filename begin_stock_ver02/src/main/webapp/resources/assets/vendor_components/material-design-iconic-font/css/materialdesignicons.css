@@ -407,6 +407,7 @@
 
 .mdi-arrow-down-bold:before {
   content: "\F72D";
+  color: blue;
 }
 
 .mdi-arrow-down-bold-box:before {
@@ -571,6 +572,7 @@
 
 .mdi-arrow-up-bold:before {
   content: "\F736";
+  color:red;
 }
 
 .mdi-arrow-up-bold-box:before {

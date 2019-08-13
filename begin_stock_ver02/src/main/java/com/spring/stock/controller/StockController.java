@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.spring.stock.persistence.StockDAO;
 import com.spring.stock.service.StockService;
 import com.spring.stock.vo.NewsVO;
+import com.spring.stock.vo.StockRecodeVO;
 import com.spring.stock.vo.StockstockVO;
 
 @Controller
@@ -218,7 +220,7 @@ public class StockController {
 	// 로그아웃 처리
 	@RequestMapping("/user/logout")
 	public String logout(HttpSession session) {
-		session.invalidate();
+		
 		
 		return "redirect:/";
 	}
@@ -226,7 +228,6 @@ public class StockController {
 	// 트레이딩 - 즉시 거래
 	@RequestMapping("/user/trading")
 	public String trading(HttpSession session, HttpServletRequest req, Model model) throws IOException {
-		session.invalidate();
 		service.upDownRate(req, model);
 		service.search(req, model);
 		return "stock/trading";
@@ -235,7 +236,6 @@ public class StockController {
 	// 예약 주문
 	@RequestMapping("/user/stockBooking")
 	public String stockBooking(HttpSession session, HttpServletRequest req, Model model) {
-		session.invalidate();
 		service.buySellBook(req, model);
 		service.upDownRate(req, model);
 		
@@ -245,7 +245,6 @@ public class StockController {
 	// 회사 코드 및 명 AJAX DB연결 페이지
 	@RequestMapping("/user/search_sub")
 	public String search_sub(HttpSession session, HttpServletRequest req, Model model) {
-		session.invalidate();
 		service.searchList(req, model);
 		return "stock/search_sub";
 	}
@@ -253,8 +252,6 @@ public class StockController {
 	// 코드 선택 시 호가창 출력
 	@RequestMapping("/user/asking_stock")
 	public String asking_stock(HttpSession session, HttpServletRequest req, Model model) {
-		session.invalidate();
-		
 		service.asking_stock(req, model);
 		return "stock/asking_stock";
 	}
@@ -262,7 +259,6 @@ public class StockController {
 	// 예약 주문 시 코드 선택 하면 정보 출력
 	@RequestMapping("/user/inf_stock")
 	public String inf_stock(HttpSession session, HttpServletRequest req, Model model) {
-		session.invalidate();
 		
 		service.asking_stock(req, model);
 		return "stock/inf_stock";
@@ -271,23 +267,22 @@ public class StockController {
 	// 즉시구매
 	@RequestMapping("/user/buyOrder")
 	public String buyOrder(HttpSession session, HttpServletRequest req, Model model) {
-		session.invalidate();
 		
 		return "stock/buyOrder";
 	}
 	
 	@RequestMapping("/user/searchCode")
 	public String searchCode(HttpSession session) {
-		session.invalidate();
+		
 		
 		return "stock/searchCode";
 	}
 	
-	@RequestMapping("/user/test")
+	@RequestMapping("/user/test2")
 	public String test(HttpSession session) {
-		session.invalidate();
 		
-		return "stock/test";
+		
+		return "stock/test2";
 	}
 	
 	//뉴스크롤링 
@@ -295,8 +290,8 @@ public class StockController {
 	public String crawling(HttpServletRequest req, Model model) throws Exception {
 
 		String url ="https://news.naver.com/main/list.nhn?mode=LS2D&mid=shm&sid1=101&sid2=258";
-		
 		org.jsoup.nodes.Document doc = Jsoup.connect(url).get();
+		int i = 0;
 		
 		Elements element = doc.select("div.content");
 		String subject = element.select("h3").text();
@@ -328,21 +323,80 @@ public class StockController {
 				vo.setPhoto(photo);
 			}else {
 				String p_root = "/stock/resources/no_detail_img.gif";
-				vo.setPhoto(p_root);}
+				vo.setPhoto(p_root);
+			}
 			
 			vo.setLink(link);
 			vo.setTitle(title);
 			vo.setLede(lede); 
-			
 			vo.setWriter(write);
 			vo.setDate(date);
 			
 			newsList.add(vo); 
+			
+			if(i == 9) {
+				break;
+			}else {
+				i++;
+			}
 		} 
 		
 		model.addAttribute("newsList", newsList); 
-		return "stock/news";
+		return "stock/news2";
 	}
+	
+	
+   // 뉴스크롤링2 - 8/19 추가(아진)
+    @RequestMapping("/user/news222")
+    public String news(HttpServletRequest req, Model model) throws Exception{
+        logger.info("url ==> news 크롤링 연습2 ");
+        
+		 String button = req.getParameter("button");
+		 String url ="";
+		 if(button == null || button.equals("1")) {  
+			url ="https://finance.naver.com/news/news_list.nhn?mode=LSS3D&section_id=101&section_id2=258&section_id3=401";
+		 }else if(button.equals("2")) {
+			url = "https://finance.naver.com/news/news_list.nhn?mode=LSS3D&section_id=101&section_id2=258&section_id3=402";
+		 }else if(button.equals("3")) {
+			url = "https://finance.naver.com/news/news_list.nhn?mode=LSS3D&section_id=101&section_id2=258&section_id3=404";
+		 }else if(button.equals("4")) {
+			url = "https://finance.naver.com/news/news_list.nhn?mode=LSS3D&section_id=101&section_id2=258&section_id3=406";
+		 }
+		 
+		 org.jsoup.nodes.Document doc = Jsoup.connect(url).get();
+        
+        Elements doc5 = doc.select("ul.realtimeNewsList");
+        Elements element6 = doc5.select("li.top dl");
+        
+        List<String> news2=new ArrayList<String>();
+        for(Element el : element6.select(".articleSummary")) { 
+           news2.add(el.text());  
+        }
+        
+        List<String> news1=new ArrayList<String>();
+        List<String> news3=new ArrayList<String>();
+        for(Element el : element6.select(".articleSubject")) {
+           String href = "https://finance.naver.com"+el.select("a").attr("href");
+           news1.add(el.select("a").attr("title"));
+           news3.add(href);
+        }
+        
+        List<NewsVO> list=new ArrayList<NewsVO>();
+        NewsVO vo; 
+        for(int i=0; i<news2.size(); i++) {
+           vo = new NewsVO();
+           vo.setTitle(news1.get(i));
+           vo.setLink(news3.get(i));
+           vo.setLede(news2.get(i));
+           list.add(vo);
+        }
+        
+		model.addAttribute("button", button);
+		model.addAttribute("newsList2", list);
+           
+		return "stock/news22";      
+    }
+
 	
 	
 	// 관심종목  리스트
@@ -365,6 +419,158 @@ public class StockController {
 		return "stock/insertInterest";
 	}
 	
+	// 기업 리스트
+	@RequestMapping("/user/company")
+	public String company(HttpServletRequest req, Model model) {
+		logger.info("경로 : company");
+		service.stockList(req, model);
+		return "stock/company";
+	}
+	
+	// 기업리스트 > 상세페이지(기업재무정보)
+	@RequestMapping("/user/financialInfo")
+	public String financialInfo(HttpServletRequest req, Model model) throws IOException {
+		logger.info("경로 : financialInfo");
+		service.chart(req, model);
+		
+		return "stock/financialInfo";
+	}
+	
+	
+	//종목 분석
+	@RequestMapping("/user/detailtheme")
+	public String detailtheme(HttpServletRequest req, Model model) {
+		logger.info("경로 : detailtheme");
+		service.detailTheme(req, model);
+		return "stock/analyze_theme";
+	}
+	
+	//재무 정보
+	@RequestMapping("/user/analyzeTheme")
+	public String detailStock(HttpServletRequest req, Model model) {
+		logger.info("경로 : detailStock");
+		service.getChooseThemes(req, model);
+		return "stock/detail_stock";
+	}
+	
+	//종목선택
+	@RequestMapping("/user/choicetheme")
+	public String choicetheme(HttpServletRequest req, Model model) {
+		logger.info("경로 : choicetheme");
+		service.gettop5stock(req ,model);
+		
+		return "stock/choicetheme";
+	}
+	
+	//메시지 목록(수신 메시지)
+	@RequestMapping("/user/message")
+	public String message(HttpServletRequest req, Model model) {
+		logger.info("경로 : message");
+		
+		service.getReceivedMessage(req, model);
+		
+		return "stock/message";
+	}
+	
+	//메시지 작성
+	@RequestMapping("/user/writeMessage")
+	public String writeMessage(HttpServletRequest req, Model model) {
+		logger.info("경로 : writeMessage");
+		
+		return "stock/writeMessage";
+	}
+	
+	//메시지 읽기(메시지 상세페이지)
+	@RequestMapping("/user/readMessage")
+	public String readMessage(HttpServletRequest req, Model model) {
+		logger.info("경로 : readMessage");
+		
+		service.getDetailMessage(req, model);
+		
+		return "stock/readMessage";
+	}
+	//보낸 메시지
+	@RequestMapping("/user/sentMessage")
+	public String sentMessage(HttpServletRequest req, Model model) {
+		logger.info("경로 : sentMessage");
+		service.getSentMessage(req, model);
+		return "stock/sentMessage";
+	}
+		
+	//메시지 휴지통
+	@RequestMapping("/user/deleteMessage")
+	public String deleteMessage(HttpServletRequest req, Model model) {
+		logger.info("경로 : deleteMessage");
+		service.getDeletedMessage(req, model);
+		return "stock/deleteMessage";
+	}
+	
+	//메시지 전송
+	@RequestMapping("/user/sendMessagePro")
+	public String sendMessagePro(HttpServletRequest req, Model model) {
+		logger.info("경로 : sendMessagePro");
+		
+		service.sendMessage(req, model);
+		
+		return "stock/sendMessagePro";
+	}
+	
+	//메시지 삭제
+	@RequestMapping("/user/deleteMessagePro")
+	public String deleteMessagePro(HttpServletRequest req, Model model) {
+		logger.info("경로 : deleteMessagePro");
+		
+		service.deleteMessagePro(req, model);
+		
+		return "stock/deleteMessagePro";
+	}
+	
+	//메시지 회복
+	@RequestMapping("/user/recoveryMessagePro")
+	public String recoveryMessagePro(HttpServletRequest req, Model model) {
+		logger.info("경로 : recoveryMessagePro");
+		
+		service.recoveryMessagePro(req, model);
+		
+		return "stock/recoveryMessagePro";
+	}
+	
+	//전체 메시지 전송 - 관리자
+	@RequestMapping("/user/entireSendMessage")
+	public String entireSendMessage(HttpServletRequest req, Model model) {
+		logger.info("경로 : entireSendMessage");
+		
+		return "stock/entireSendMessage";
+	}
+	
+	//전체 메시지 전송 처리 - 관리자
+	@RequestMapping("/user/sendEntireMessagePro")
+	public String sendEntireMessagePro(HttpServletRequest req, Model model) {
+		logger.info("경로 : sendEntireMessagePro");
+		
+		service.sendEntireMessagePro(req, model);
+		
+		return "stock/sendEntireMessagePro";
+	}
+	
+	//테마분석 선택
+	@RequestMapping("/user/chooseTheme")
+	public String chooseTheme(HttpServletRequest req, Model model) {
+		logger.info("경로 : readMessage");
+		
+		service.getEntireThemes(req, model);
+		
+		return "stock/chooseTheme";
+	}
+	
+	// 관심종목 삭제 -- 이거 삭제되서 이름 바꿔서 다시 복구함 (아진) 
+	@RequestMapping("/user/itemDelete")
+	public String itemDelete(HttpServletRequest req, Model model) {
+		logger.info("경로 : itemDelete");
+		service.deletePro(req, model);
+		
+		return "stock/deletePro";
+	}
 		
 		
 	// 관심종목  - 선택기업(자바스크립트타고 넘어옴/ ajax리턴) 
@@ -388,46 +594,178 @@ public class StockController {
 		return map;
 	}
 	
-	// 기업 리스트
-	@RequestMapping("/user/company")
-	public String company(HttpServletRequest req, Model model) {
-		logger.info("경로 : company");
-		service.stockList(req, model);
-		return "stock/company";
+	// 기업 리스트(종목검색)
+	@RequestMapping("/user/stocklistsearch")
+	public String stocklistsearch(HttpServletRequest req, Model model) throws IOException{
+		logger.info("경로 : stocklistsearch");
+		service.stocklistsearch(req, model);
+		return "stock/company2";
 	}
-	
-	// 기업리스트 > 상세페이지(기업재무정보)
-	@RequestMapping("/user/financialInfo")
-	public String financialInfo(HttpServletRequest req, Model model) {
-		logger.info("경로 : financialInfo");
-		service.chart(req, model);
+
+	//8.14 이경재 나의 주식 거래 정보 
+	@RequestMapping("/user/complete")
+	public String complete(HttpServletRequest req, Model model) {
+		logger.info("경로 : complete");
+		service.completedStock(req, model);
 		
-		return "stock/financialInfo";
+		return "stock/complete_stock";
 	}
-	
-	
-	//종목 분석
-	@RequestMapping("/user/detailtheme")
-	public String detailtheme(HttpServletRequest req, Model model) {
-		logger.info("경로 : detailtheme");
+	//8.19추가 이체 한도 및 결과 조회
+	@RequestMapping("/user/transfer_limit")
+	public String transfer_limit(HttpServletRequest req, Model model) {
+		logger.info("경로 : transfer_limit");
+		service.accountInfo(req,model);		//계좌정보출력
 		
-		return "stock/analyze_theme";
+		return "stock/transfer_limit";
 	}
 	
-	//재무 정보
-	@RequestMapping("/user/detailStock")
-	public String detailStock(HttpServletRequest req, Model model) {
-		logger.info("경로 : detailStock");
+	//계좌 잔액 조회 및 비밀번호 확인
+	@RequestMapping("/user/accountSearch")
+	public String accountSearch(HttpServletRequest req, Model model) {
+	service.accountSearch(req,model);
+	
+	return "stock/accountSearch";
+	}
+	//이체 실행
+	@RequestMapping("/user/transferMoney")
+	public String transferMoney(HttpServletRequest req, Model model) {
+		logger.info("경로 : transferMoney"); 
+		service.transferMoney(req,model);	
+		return "stock/transferMoney";
+	}
+	//이체 실행 시 확인 페이지
+	@RequestMapping("/user/transferChk")
+	public String transferChk(HttpServletRequest req, Model model) {
+		logger.info("경로 : transferChk"); 
+		service.transferChk(req,model);	
 		
-		return "stock/detail_stock";
+		return "stock/transferChk";
+	}
+	//이제정보 불러오기 ajax
+	@RequestMapping("/user/dateTranseInf")
+	public String dateTranseInf(HttpServletRequest req, Model model) {
+		logger.info("경로 : dateTranseInf"); 
+		service.dateTranseInf(req,model);	
+		
+		return "stock/dateTranseInf";
+	}
+	// 공지사항
+	@RequestMapping("/user/notice")
+	public String notice(HttpServletRequest req, Model model) {
+		logger.info("경로 : notice");
+		service.noticeList(req, model);
+		return "user/notice";
 	}
 	
-	//종목선택
-	@RequestMapping("/user/choicetheme")
-	public String choicetheme(HttpServletRequest req, Model model) {
-		logger.info("경로 : choicetheme");
-		service.gettop5stock(req ,model);
-		
-		return "stock/choicetheme";
+	// 공지사항 작성
+	@RequestMapping("/admin/noticeWrite")
+	public String noticeWrite(HttpServletRequest req, Model model) {
+		logger.info("경로 : noticeWrite");
+		service.noticeWrite(req, model);
+		return "admin/noticeWrite";
 	}
+	
+	// 공지사항 작성 성공 여부
+	@RequestMapping("/admin/noticeWritePro")
+	public String noticeWritePro(HttpServletRequest req, Model model) {
+		logger.info("경로 : noticeWritePro");
+		service.noticeWritePro(req, model);
+		return "admin/noticeWritePro";
+	}
+	
+	// 공지사항 상세 보기
+	@RequestMapping("user/noticeContentForm")
+	public String noticeContentForm(HttpServletRequest req, Model model) {
+		logger.info("경로 : noticeContentForm");
+		service.noticeForm(req, model);
+		return "user/noticeContentForm";
+	}
+	
+	// 관리자 페이지로 이동
+	@RequestMapping("/admin/hostPage")
+	public String hostPage(HttpServletRequest req, Model model) {
+		logger.info("경로 : hostPage");
+		service.hostForm(req, model);
+		return "admin/hostPage";
+	}
+	
+	//거래내역조회
+	@RequestMapping("/user/searchTrading")
+	public String searchTrading(HttpServletRequest req, Model model) {
+		logger.info("경로 : searchTrading");
+		service.upDownRate(req, model);
+		service.buyList(req, model);
+		service.sellList(req, model);
+		service.Trans_InList(req, model);
+		service.Trans_OutList(req, model);
+		return "stock/searchTrading";
+	}
+	
+	
+	// user1대1문의
+	@RequestMapping("/user/userInquiry")
+	public String userInquiry(HttpServletRequest req, Model model) {
+		logger.info("경로 : userInquiry");
+		service.quiryList(req, model);
+		return "user/userInquiry";
+	}
+	
+	// user1대1문의 상세페이지
+	@RequestMapping("/user/usercontentForm")
+	public String usercontentForm(HttpServletRequest req, Model model) {
+		logger.info("경로 : usercontentForm");
+		service.contentForm(req, model);
+		return "user/usercontentForm";
+	}
+	
+	
+	// user1대1문의 글쓰기폼
+	@RequestMapping("/user/userWriterForm")
+	public String userWriterForm(HttpServletRequest req, Model model) {
+		logger.info("경로 : userWriterForm");
+		service.userWriterForm(req, model);
+		return "user/userWriterForm";
+	}
+	
+	// user1대1문의 글쓰기 성공실ㅊ패
+	@RequestMapping("/user/writePro")
+	public String writePro(HttpServletRequest req, Model model) {
+		logger.info("경로 : writePro");
+		service.writePro(req, model);
+		return "user/writePro";
+	}
+	// 게시글 수정 상세페이지
+	@RequestMapping("/user/usermodifyForm")
+	public String usermodifyForm(HttpServletRequest req, Model model) {
+		logger.info("경로 : usermodifyForm");
+		service.usermodifyView(req, model);
+		return "user/usermodifyForm";
+	}
+	
+	// 게시글 수정 처리페이지
+	@RequestMapping("/user/usermodifyPro")
+	public String usermodifyPro(HttpServletRequest req, Model model) {
+		logger.info("경로 : usermodifyPro");
+		service.modifyPro(req, model);
+		return "user/usermodifyPro";
+		
+	}
+	
+	// 1대1문의 글삭제
+	@RequestMapping("/user/userdeletePro")
+	public String userdeletePro(HttpServletRequest req, Model model) {
+		logger.info("경로 : userdeletePro");
+		service.userdeletePro(req, model);
+		return "user/userdeletePro";
+	}
+	
+	// 트레이딩 차트
+	@RequestMapping("/user/chart_stock")
+	public String chart_stock(HttpSession session, HttpServletRequest req, Model model) {
+		session.invalidate();
+		
+		service.chart_stock(req, model);
+		return "stock/chart_stock";
+	}
+	
 }

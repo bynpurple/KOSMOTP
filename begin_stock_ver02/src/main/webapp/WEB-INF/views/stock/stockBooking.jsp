@@ -51,7 +51,126 @@
 				alert('잠시만 기다려주세요');
 			}
 	  });
-  } 
+	  
+	  $('#md_checkbox_21').click(function(){
+			 if($('#md_checkbox_21').prop('checked')){
+				 var curval = document.value.currVal.value;
+				 document.buyinf.buy_price.value = curval;
+			 }
+			 else{
+				 document.buyinf.buy_price.value = "";
+			 }
+		  });
+		  
+	  $('#md_checkbox_22').click(function(){
+		 if($('#md_checkbox_22').prop('checked')){
+			 var curval = document.value.currVal.value;
+			 document.sellinf.sell_price.value = curval;
+		 }
+		 else{
+			 document.sellinf.sell_price.value = "";
+		 }
+	  });
+	  
+	  $.ajax({
+			type:"GET",
+			data:"CompanyCode=" + '000020',
+			url: '${pageContext.request.contextPath}/user/inf_stock',
+			success:function(data){
+				$('#inf').html(data);
+			},
+			error:function(){
+				alert('잠시만 기다려주세요');
+			}
+		});	  
+  }	  
+  	function orderBuy(){
+	  var stockcode = document.search.keyword.value;
+	  var buy_cnt =  document.buyinf.buy_cnt.value;
+	  var buy_price = document.buyinf.buy_price.value;
+	  var buy_total =  document.buyinf.buy_total.value;
+	  
+	  var reg1 =/^[1-9]{1,9}$/;
+	  
+	  var result1 = reg1.test(buy_cnt);
+	  var result2 = reg1.test(buy_price);
+	  
+	  if(stockcode == ""){
+		  alert("회사코드를 선택해주세요");
+	  }else if(buy_cnt == ""){
+		  alert("매수 수량을 입력해주세요");
+	  }else if(buy_price == ""){
+		  alert("매수 가격을 입력해주세요");
+	  }
+	  else{
+		  if(!result1){
+			  alert("수량이 잘못되었습니다");
+			  buy_cnt = "";
+			  document.buyinf.buy_cnt.focus();
+			  return false;
+		  }
+		  if(!result2){
+			  alert("가격이 잘못되었습니다");
+			  buy_price = "";
+			  document.buyinf.buy_price.focus();
+			  return false;
+		  }
+		  
+		  var url ="예약 테이블 만들어지면 새로 만들기"//"buyOrder?stockcode="+stockcode + "&buy_cnt="+buy_cnt+"&buy_price="+buy_price+"&buy_total="+buy_total;
+		  window.open(url,"주식 매수 신청","menubar=no , width=500, height=300");
+	  }
+  }
+  
+  	function orderSell(){
+	  var stockcode = document.search.keyword.value;
+	  var sell_cnt =  document.sellinf.sell_cnt.value;
+	  var sell_price = document.sellinf.sell_price.value;
+	  var sell_total =  document.sellinf.sell_total.value;
+	  
+	  var reg1 =/^[1-9]{1,9}$/;
+	  
+	  var result1 = reg1.test(sell_cnt);
+	  var result2 = reg1.test(sell_price);
+	  
+	  if(stockcode == ""){
+		  alert("회사코드를 선택해주세요");
+	  }else if(sell_cnt == ""){
+		  alert("매도 수량을 입력해주세요");			  
+	  }else if(sell_price == ""){
+		  alert("매도 가격을 입력해주세요");
+	  }
+	  else{
+		  if(!result1){
+			  alert("수량이 잘못되었습니다");
+			  sell_cnt = "";
+			  document.sellinf.sell_cnt.focus();
+			  return false;
+		  }
+		  if(!result2){
+			  alert("가격이 잘못 되었습니다");
+			  sell_price = "";
+			  document.sellinf.sell_price.focus();
+			  return false;
+		  }
+		  var url ="예약 테이블 만들어지면 새로 만들기" //"sellOrder?stockcode="+stockcode + "&sell_cnt="+sell_cnt+"&sell_price="+sell_price+"&sell_total="+sell_total;
+		  window.open(url,"주식 매도 신청","menubar=no , width=500, height=300");
+	  }
+  }
+  
+  function calcu(){
+	  var buy_cnt =  document.buyinf.buy_cnt.value;
+	  var buy_price = document.buyinf.buy_price.value;
+	  document.buyinf.buy_total.value = buy_cnt * buy_price;
+	  
+	  var sell_cnt =  document.sellinf.sell_cnt.value;
+	  var sell_price = document.sellinf.sell_price.value;
+	 document.sellinf.sell_total.value = sell_cnt * sell_price;
+  }
+
+ 	function curr(val){
+	  document.buyinf.buy_price.value = val;  
+	  document.sellinf.sell_price.value = val;  
+  }
   </script>
   </head>
 
@@ -103,274 +222,252 @@
 			  </div>
 			</div>
 			<!-- 매수/매도 창 시작 -->
-			<div class="col-xl-4 col-12">
-				<div class="box" style="height:800px;">
-				  <ul class="nav nav-tabs nav-tabs-danger nav-justified" role="tablist">
-					<li class="nav-item">
-					  <a class="nav-link active font-size-18" data-toggle="tab" href="#buy" role="tab">매수</a>
-					</li>
-					<li class="nav-item">
-					  <a class="nav-link font-size-18" data-toggle="tab" href="#sell" role="tab">매도</a>
-					</li>
-				  </ul>
+		<div class="col-xl-4 col-12">
+			<div class="box" style="height:945px;">
+			<div class="col-13" style="height: 400px; overflow: auto;" id="slimtest1">
+	       <div class="box">
+	       <div class="box-body">
+			<div class="table-responsive">
+				<div class="box-header with-border" style ="height :72px;" >
+				  <h4 class="box-title">Search</h4>
+					<div class="box-controls pull-right">
+						<span class="search-box">
+						<br>
+						<form class="app-search" style="top:-45%;" name="search"> <!-- style="display: none;" --> 
+							<input type="text" class="form-control" placeholder="Search &amp; enter" id="keyword"> <a class="srh-btn"></a>
+						</form>
+						</span>
+					</div>
+				</div>
+			  <table id="example5" class="table table-hover">
+				<tr>
+					<td>
+						<p class="mb-0">
+						  <strong id ="result"></strong>
+						</p>
+					</td>
+				</tr>
+		 	  </table>
+			</div>
+	       </div>
+	         <!-- /.box-body -->
+	       </div>
+	       <!-- /.box -->
+	       </div>
+			  <ul class="nav nav-tabs nav-tabs-danger nav-justified" role="tablist">
+				<li class="nav-item">
+				  <a class="nav-link active font-size-18" data-toggle="tab" href="#buy" role="tab">BUY</a>
+				</li>
+				<li class="nav-item">
+				  <a class="nav-link font-size-18" data-toggle="tab" href="#sell" role="tab">SELL</a>
+				</li>
+			  </ul>
 
-				  <!-- Tab panes -->
-				  <div class="box-body tab-content">
-					<div class="tab-pane fade active show" id="buy">
-					  <form name ="search">
-					  	<table>
-							<tr>
-								<td><input type="text" class="form-control" placeholder="Search &amp; enter" id="keyword"> <a class="srh-btn"><i class="ti-close"></i></a></td>
-								<td rowspan ="2" style="width: 300px; height : 250px; overflow :auto;">
-									<p class="mb-0" align ="center" style="height : 150px; overflow :auto;">
-									<strong id ="result" ></strong>
-									</p>
-								</td>
-							</tr>
-							<tr>
-								<td>
-								<p class="my-10">조건</p>
-								<div class="dropdown">
-								<button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown">예약 조건</button>
-									<div class="dropdown-menu">
-									  <h6 class="dropdown-header">예약 조건</h6>
-									  <a class="dropdown-item" href="#">지정가</a>
-									  <a class="dropdown-item" href="#">시장가</a>
-									</div>
-								</div>
-								</td>
-							</tr>
-						</table>
-						
-						<p class="my-10">일자</p>
-						<div class="input-group">
-							<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-							<input type="text" class="form-control pull-right" id="buyReservation">
-					  	</div>	
-					  	
-					  	<div class="input-group">
-							<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-							<a href="#" id="inline-dob" data-type="combodate" data-value="2015-09-24" data-format="YYYY-MM-DD" data-viewformat="DD/MM/YYYY" data-template="D / MMM / YYYY" data-pk="1" data-title="Select Date of birth"></a>
-					  	</div>
-					  	
-					  	<p class="my-10">수량</p>
-						<div class="input-group">
-							<span class="input-group-addon">MAX</span>
-							<input type="text" class="form-control" placeholder="0.00">
-							<span class="input-group-addon">BTC</span>
-					  	</div>	
-					  	<p class="my-10">가격</p>
-						<div class="input-group">
-							<input type="text" class="form-control" placeholder="3987.55">
-							<span class="input-group-addon">USDC</span>
-					  	</div>
-						  
-						<div class="d-flex justify-content-between pt-45 pb-5">
-							<h5 class="text-fade">Fee*</h5>
-							<h5 class="text-fade">0.000000 USDC</h5>
-						</div>
-						<div class="d-flex justify-content-between pb-25">
-							<h5 class="text-fade">Total*</h5>
-							<h5 class="text-fade">0.000000 USDC</h5>
-						</div>
-						<div class="d-block">
-							<button type="button" class="btn btn-block btn-success btn-lg">PLACE ORDER</button>
-						</div>
-					  </form>
-					</div>
-					<div class="tab-pane fade" id="sell">
-						<form>
-						<table>
-							<tr>
-								<td>
-									<p class="my-10">종목</p>
-									<div class="dropdown">
-									<button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown">종목코드</button>
-									<div class="dropdown-menu">
-									  <h6 class="dropdown-header">종목 코드</h6>
-									  <a class="dropdown-item" href="#">1111111</a>
-									  <a class="dropdown-item" href="#">2222222</a>
-									  <a class="dropdown-item" href="#">3333333</a>
-									</div>
-								 	</div>
-								</td>
-								
-								<td>
-									<p class="my-10">조건</p>
-									<div class="dropdown">
-									<button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown">예약 조건</button>
-										<div class="dropdown-menu">
-										  <h6 class="dropdown-header">예약 조건</h6>
-										  <a class="dropdown-item" href="#">조건1</a>
-										  <a class="dropdown-item" href="#">조건2</a>
-										  <a class="dropdown-item" href="#">조건3</a>
-										</div>
-									</div>
-								</td>
-							</tr>
-						</table>
-						<p class="my-10">기간</p>
-						
-						<p class="my-10">일자</p>
-						<div class="input-group">
-							<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-							<input type="text" class="form-control pull-right" id="sellReservation">
-					  	</div>	
-					  	
-					  	<p class="my-10">수량</p>
-						<div class="input-group">
-							<span class="input-group-addon">MAX</span>
-							<input type="text" class="form-control" placeholder="0.00">
-							<span class="input-group-addon">BTC</span>
-					  	</div>	
-					  	<p class="my-10">가격</p>
-						<div class="input-group">
-							<input type="text" class="form-control" placeholder="3987.55">
-							<span class="input-group-addon">USDC</span>
-					  	</div>
-						  
-						<div class="d-flex justify-content-between pt-45 pb-5">
-							<h5 class="text-fade">Fee*</h5>
-							<h5 class="text-fade">0.000000 USDC</h5>
-						</div>
-						<div class="d-flex justify-content-between pb-25">
-							<h5 class="text-fade">Total*</h5>
-							<h5 class="text-fade">0.000000 USDC</h5>
-						</div>
-						<div class="d-block">
-							<button type="button" class="btn btn-block btn-success btn-lg">PLACE ORDER</button>
-						</div>
-					  </form>
-					</div>
+			  <!-- Tab panes -->
+			  
+			  <div class="box-body tab-content">
+				<div class="tab-pane fade active show" id="buy">
+				<form name = "buyinf">
+				<!--Default!-->
+			    <div class="col-lg-4">
+			    <div class="btn-group">
+				  <button class="btn btn-light dropdown-toggle" type="button" data-toggle="dropdown">종류</button>
+				  <div class="dropdown-menu">
+					<a class="dropdown-item" href="javascript:mark()" style="weight:bold; color:white" >지정가</a>
+					<a class="dropdown-item" href="javascript:curr(document.value.currVal.value);" style="weight:bold; color:white" >시장가</a>
 				  </div>
 				</div>
-			</div>
-			
-			<!-- 매수/매도 창 종료 -->
-			
-			<!-- 해당 주식 간편 정보 시작 -->
-			<div class="col-xl-4 col-12">
-				<div class="box" id="inf">
-					<div class="box-header with-border">
-					<h4 class="box-title">주식 간편 정보</h4>
-					</div>
-						<div class="table-responsive">
-						<table class="table table-bordered">
-						  <tbody>
-							<tr>
-							  <th scope="row">현재가</th>
-							  <td>
-							  	<ul>
-									<li></li>
-									<li>전일 대비 </li>
-									<li>등락률</li>
-								</ul>
-							  </td>
-							</tr>
-							<tr>
-							  <th scope="row">금일상한</th>
-							  <td></td>
-							</tr>
-							<tr>
-							  <th scope="row">금일하한</th>
-							  <td></td>
-							</tr>
-							<tr>
-							  <th scope="row">시가</th>
-							  <td></td>
-							</tr>
-							<tr>
-							  <th scope="row">고가</th>
-							  <td></td>
-							</tr>
-							<tr>
-							  <th scope="row">저가</th>
-							  <td></td>
-							</tr>
-							<tr>
-							  <th scope="row">예약상한</th>
-							  <td></td>
-							</tr>
-							<tr>
-							  <th scope="row">예약하한</th>
-							  <td></td>
-							</tr>
-						  </tbody>
-						</table>
-						</div>
+			    </div>
+			    <br>
+			    <div class="input-group date">
+                  <div class="input-group-addon">
+                    <i class="fa fa-calendar"></i>
+                  </div>
+                  <input type="date" id="buyBookStart" class="form-control pull-right">
+                  <input type="date" id="buyBookEnd" class="form-control pull-right">
+                </div>
+			  	<br>
+			  	<div class="form-group">
+				<div class="input-group">
+				<span class="input-group-addon">수량</span>
+				<input type="text" id = "buy_cnt" name="buy_cnt" class="form-control" placeholder="매수 수량을 입력해 주세요" onkeyup="calcu();">
+				<span class="input-group-addon">주</span>
 				</div>
-				<div class="box">
-				<div class="table-responsive">
-					<table>
-					<tbody>
-						<tr>
-							<td> 정보창 추가</td>
-						</tr>
-					</tbody>
-					</table>
-				</div>	
 				</div>
-			</div>	   
-			<!-- 해당 주식 간편 정보 끝 -->
-			
-			<!-- 상승하락창  시작 -->
-			<div class="col-xl-4 col-12" style="height: 820px; overflow: hidden;">
-				<div class="box" id="asking">
+	  		
+  				<div class="form-group">
+				<div class="input-group">
+				<span class="input-group-addon">가격</span>
+				<input type="text" id = "buy_price" name="buy_price" class="form-control"  placeholder="가격을 입력해 주세요" onkeyup="calcu();">
+				<span class="input-group-addon">원</span>
 				</div>
-			</div>
-			
-			<!-- 상승하락창 끝 -->
-		   
-		   <!-- 매도 매수 창 시작 -->
-		   <div class="col-12">
-			<div class="row">
-		<div class="col-lg-6 col-12">
-		  <!-- Default box -->
-		  <div class="box box-solid bg-black">
-			<div class="box-header with-border">
-			  <h3 class="box-title">매수 예약 내역</h3>
-
-			  <div class="box-tools pull-right">
-				<button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip"
-						title="Collapse">
-				  <i class="fa fa-minus"></i></button>
-				<button type="button" class="btn btn-box-tool" data-widget="remove" data-toggle="tooltip" title="Remove">
-				  <i class="fa fa-times"></i></button>
-			  </div>
-			</div>
-			<div class="box-body">
-				<div class="table-responsive">
-					<table class="table table-bordered no-margin">
-					  <thead>
-						<tr>
-						  <th>매수 예약 날짜</th>
-						  <th>종목 코드</th>
-						  <th>구분(테마)</th>
-						  <th>회사명</th>
-						  <th>매수 예약가</th>
-						  <th>매수 수량</th>
-						</tr>
-					  </thead>
-					  <tbody>
-					  <c:forEach var="buy" items="${buyBookStock}">
-					  	<tr>
-					  	  <td class="text-red hover-danger"><fmt:formatDate value="${buy.stockDate}" pattern ="yy/MM/dd"/>
-					  	  </td>
-						  <td>${buy.stockCode}</td>
-						  <td>${buy.stockTheme}</td>
-						  <td>${buy.stockName}</td>
-						  <td>${buy.stockCurrent}</td>
-						  <td>${buy.totalStock}</td>
-						</tr>
-					  </c:forEach>
-					  </tbody>
-					</table>
 				</div>
+  				<input type="checkbox" id="md_checkbox_21" class="filled-in chk-col-red" />
+				<label for="md_checkbox_21">현재가</label>		
+					
+		  		<p class="my-10">주문금액</p>
+				<div class="input-group">
+					<input type="text" class="form-control" name="buy_total" id="buy_total" readonly >
+					<span class="input-group-addon">원</span>
+			  	</div>
+				<br>  
+				<div class="d-block">
+					<button type="button" class="btn btn-block btn-success btn-lg" onclick="orderBuy();">BUY ORDER</button>
+				</div>
+				</form>
+			 </div>
+			 <div class="tab-pane fade" id="sell">
+			 <form name = "sellinf">
+				<!--Default!-->
+			    <div class="col-lg-4">
+			    <div class="btn-group">
+				  <button class="btn btn-light dropdown-toggle" type="button" data-toggle="dropdown">종류</button>
+				  <div class="dropdown-menu">
+					<a class="dropdown-item" href="javascript:mark()" style="weight:bold; color:white" >지정가</a>
+					<a class="dropdown-item" href="javascript:curr(document.value.currVal.value);" style="weight:bold; color:white" >시장가</a>
+				  </div>
+				</div>
+			    </div>
+			    <br>
+			    <div class="input-group date">
+                  <div class="input-group-addon">
+                    <i class="fa fa-calendar"></i>
+                  </div>
+                  <input type="date" id = "sellBookStart" class="form-control pull-right">
+                  <input type="date" id = "sellBookEnd" class="form-control pull-right">
+                </div>
+			  	<br>
+			  	<div class="form-group">
+				<div class="input-group">
+				<span class="input-group-addon">수량</span>
+				<input type="text" id = "sell_cnt" name="sell_cnt" class="form-control" placeholder="매도 수량을 입력해 주세요" onkeyup="calcu();">
+				<span class="input-group-addon">주</span>
+				</div>
+				</div>
+	  		
+  				<div class="form-group">
+				<div class="input-group">
+				<span class="input-group-addon">가격</span>
+				<input type="text" id = "sell_price" name="sell_price" class="form-control"  placeholder="가격을 입력해 주세요" onkeyup="calcu();">
+				<span class="input-group-addon">원</span>
+				</div>
+				</div>
+  				<input type="checkbox" id="md_checkbox_22" class="filled-in chk-col-red" />
+				<label for="md_checkbox_22">현재가</label>		
+					
+		  		<p class="my-10">주문금액</p>
+				<div class="input-group">
+					<input type="text" class="form-control" name="sell_total" id="sell_total" readonly >
+					<span class="input-group-addon">원</span>
+			  	</div>
+				<br>  
+				<div class="d-block">
+					<button type="button" class="btn btn-block btn-success btn-lg" onclick="orderSell();">SELL ORDER</button>
+				</div>
+			</form>	
 			</div>
-			<!-- /.box-body -->
 		  </div>
-		  <!-- /.box -->
 		</div>
+		</div>
+		<!-- 매수/매도 창 종료 -->
+		
+		<!-- 해당 주식 간편 정보 시작 -->
+		<div class="col-xl-4 col-12">
+			<div class="box" id="inf"></div>
+			<div class="box">
+			<div class="box-body no-padding" style="overflow : auto;">
+			<div class="table table-hover" style="height :250px; overflow : auto;">
+				<table>
+				<thead>
+					<tr>
+						<th colspan="6"><h3 class="box-title text-warning">나의 보유 종목</h3></th>
+					</tr>
+					<tr>
+						<th>날짜</th>
+						<th>업종</th>
+						<th>회사명</th>
+						<th>가격</th>
+						<th>수량</th>
+						<th>총합</th>
+					</tr>
+				</thead>
+				<tbody>
+					<c:forEach var = "list" items="${list}">
+					<tr>
+						<th><fmt:formatDate value="${list.c_date}" pattern="yy/MM/dd"/></th>
+						<th>${list.stocktheme}</th>
+						<th>${list.stockname}</th>
+						<th><fmt:formatNumber type="number" maxFractionDigits="3" value="${list.c_price}"></fmt:formatNumber>원</th>
+						<th><fmt:formatNumber type="number" maxFractionDigits="3" value="${list.c_cnt}"></fmt:formatNumber>주</th>
+						<th><fmt:formatNumber type="number" maxFractionDigits="3" value="${list.c_total}"></fmt:formatNumber>원</th>
+					</tr>
+					</c:forEach>
+				</tbody>
+				</table>
+			</div>	
+			</div>
+			</div>
+		</div>	   
+		<!-- 해당 주식 간편 정보 끝 -->
+		
+		<!-- 상승하락창  시작 -->
+		<div class="col-xl-4 col-12" style="height: 945px; overflow: hidden;">
+			<div class="box" id="asking">
+			</div>
+		</div>
+		
+		<!-- 상승하락창 끝 -->
+	   
+	   <!-- 매도 매수 창 시작 -->
+	   <div class="col-12">
+	<div class="row">
+	<div class="col-lg-6 col-12">
+	  <!-- Default box -->
+	  <div class="box box-solid bg-black">
+		<div class="box-header with-border">
+		  <h3 class="box-title">매수 예약 내역</h3>
+
+		  <div class="box-tools pull-right">
+			<button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip"
+					title="Collapse">
+			  <i class="fa fa-minus"></i></button>
+			<button type="button" class="btn btn-box-tool" data-widget="remove" data-toggle="tooltip" title="Remove">
+			  <i class="fa fa-times"></i></button>
+		  </div>
+		</div>
+		<div class="box-body">
+			<div class="table-responsive">
+				<table class="table table-bordered no-margin">
+				  <thead>
+					<tr>
+					  <th>매수 예약 날짜</th>
+					  <th>종목 코드</th>
+					  <th>구분(테마)</th>
+					  <th>회사명</th>
+					  <th>매수 예약가</th>
+					  <th>매수 수량</th>
+					</tr>
+				  </thead>
+				  <tbody>
+				  <c:forEach var="buy" items="${buyBookStock}">
+				  	<tr>
+				  	  <td class="text-red hover-danger"><fmt:formatDate value="${buy.stockDate}" pattern ="yy/MM/dd"/>
+				  	  </td>
+					  <td>${buy.stockCode}</td>
+					  <td>${buy.stockTheme}</td>
+					  <td>${buy.stockName}</td>
+					  <td>${buy.stockCurrent}</td>
+					  <td>${buy.totalStock}</td>
+					</tr>
+				  </c:forEach>
+				  </tbody>
+				</table>
+			</div>
+		</div>
+		<!-- /.box-body -->
+	  </div>
+	  <!-- /.box -->
+	</div>
 		
 		<div class="col-lg-6 col-12">
 		  <!-- Default box -->
@@ -631,6 +728,7 @@
 	 
 	<!-- jQuery 3 -->
 	<script src="${project}assets/vendor_components/jquery/dist/jquery.js"></script>
+	<script src="${project}assets/vendor_components/jquery/dist/jquery.min.js"></script>
 	
 	<!-- popper -->
 	<script src="${project}assets/vendor_components/popper/dist/popper.min.js"></script>
@@ -665,6 +763,15 @@
 	<script src="${project}assets/vendor_components/moment/min/moment.min.js"></script>
 	<script src="${project}assets/vendor_components/bootstrap-daterangepicker/daterangepicker.js"></script>
 	
+	<!-- bootstrap color picker -->
+	<script src="${project}assets/vendor_components/bootstrap-colorpicker/dist/js/bootstrap-colorpicker.min.js"></script>
+	
+	<!-- bootstrap time picker -->
+	<script src="${project}assets/vendor_plugins/timepicker/bootstrap-timepicker.min.js"></script>
+	
+	<!-- iCheck 1.0.1 -->
+	<script src="${project}assets/vendor_plugins/iCheck/icheck.min.js"></script>
+	
     <!-- Resources -->
 	<script src="https://www.amcharts.com/lib/4/core.js"></script>
 	<script src="https://www.amcharts.com/lib/4/charts.js"></script>
@@ -689,7 +796,14 @@
 	
 	<!-- Crypto_Admin for demo purposes -->
 	<script src="${project}js/demo.js"></script>
-
+	
+	<!-- SlimScroll -->
+	<script src="${project}assets/vendor_components/jquery-slimscroll/jquery.slimscroll.min.js"></script>
+    <script type="text/javascript">
+        $('#slimtest1').slimScroll({
+            height: '400px'
+        });
+    </script>
 	
 </body>
 </html>

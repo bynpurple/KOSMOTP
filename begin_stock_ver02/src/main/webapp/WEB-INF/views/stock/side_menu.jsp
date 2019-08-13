@@ -1,13 +1,12 @@
 <%@ include file="../include/header.jsp" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-    
 <!-- sidebar -->
     <section class="sidebar">
       <!-- Sidebar user panel -->
       <div class="user-panel">
 		 <div class="ulogo">
-			 <a href="trading">
+			 <a href="${path}/user/trading">
 			  <!-- logo for regular state and mobile devices -->
 			  <span><b>EZ </b>STOCK</span>
 			</a>
@@ -16,10 +15,9 @@
           <img src="${project}images/user2-160x160.jpg" class="rounded-circle" alt="User Image">
         </div>
         <div class="info">
-          <p>사용자님 환영합니다!</p>
-			<a href="" class="link" data-toggle="tooltip" title="" data-original-title="Settings"><i class="ion ion-gear-b"></i></a>
-            <a href="" class="link" data-toggle="tooltip" title="" data-original-title="Email"><i class="ion ion-android-mail"></i></a>
-            <a href="" class="link" data-toggle="tooltip" title="" data-original-title="Logout"><i class="ion ion-power"></i></a>
+          <p>${pageContext.request.userPrincipal.name}님 환영합니다!</p>
+			<a href="${path}/user/logout" class="link" data-toggle="tooltip" title="" data-original-title="로그아웃"><i class="ion ion-power"></i></a>
+            <a href="${path}/user/message?username=${pageContext.request.userPrincipal.name}" class="link" data-toggle="tooltip" title="" data-original-title="메시지"><i class="ion ion-android-mail"></i></a>
         </div>
       </div>
       <!-- sidebar menu -->
@@ -34,8 +32,8 @@
           </a>
           <ul class="treeview-menu">
          	<li><a href="${path}/user/mypage">마이페이지</a></li>
-            <li><a href="${path}/user/trading">이체 한도/결과 조회</a></li>
-            <li><a href="${path}/user/trading">거래 내역 조회</a></li>
+            <li><a href="${path}/user/transfer_limit">이체 한도/결과 조회</a></li>
+            <li><a href="${path}/user/searchTrading?username=${pageContext.request.userPrincipal.name}">거래 내역 조회</a></li>
           </ul>
         </li>
         
@@ -58,15 +56,16 @@
         <li class="treeview">
           <a href="#">
             <i class="icon-compass"></i>
-            <span>차트 및 종목 분석</span>
+            <span>테마 분석 및 뉴스</span>
             <span class="pull-right-container">
               <i class="fa fa-angle-right pull-right"></i>
             </span>
           </a>
           <ul class="treeview-menu">
-            <li><a href="${path}/user/choicetheme">종목 분석</a></li>
-            <li><a href="${path}/user/detailStock">기업 재무 정보</a></li>
+            <li><a href="${path}/user/choicetheme">테마 정보</a></li>
+            <li><a href="${path}/user/chooseTheme">테마 분석</a></li>
             <li><a href="${path}/user/news">최신 경제 뉴스</a></li>
+            <li><a href="${path}/user/news222">테마별 경제 뉴스</a></li>
           </ul>
         </li>
         
@@ -79,7 +78,7 @@
             </span>
           </a>
           <ul class="treeview-menu">
-            <li><a href="${path}/user/trading">이체</a></li>
+            <li><a href="${path}/user/transfer_limit">이체</a></li>
             <li><a href="${path}/user/trading">계좌 설정</a></li>
           </ul>
         </li>
@@ -96,7 +95,27 @@
             <li><a href="${path}/user/trading">공지사항</a></li>
             <li><a href="${path}/user/trading">이용가이드</a></li>
             <li><a href="${path}/user/trading">1대1 문의</a></li>
+            <li><a href="${path}/user/faq">FAQ</a></li>
           </ul>
         </li>
+        
+        <!-- 관리자 전용 추가 메뉴  -->
+        <c:if test="${pageContext.request.userPrincipal.name == 'host'}">
+        <li class="treeview">
+          <a href="#">
+            <i class="icon-compass"></i>
+            <span>관리자 페이지</span>
+            <span class="pull-right-container">
+              <i class="fa fa-angle-right pull-right"></i>
+            </span>
+          </a>
+          <ul class="treeview-menu">
+            <li><a href="${path}/user/trading">1대1 문의 답변</a></li>
+            <li><a href="${path}/user/trading">공지사항</a></li>
+            <li><a href="${path}/user/entireSendMessage">단체 메시지 전송</a></li>
+          </ul>
+        </li>
+        </c:if>
+        
       </ul>
     </section>

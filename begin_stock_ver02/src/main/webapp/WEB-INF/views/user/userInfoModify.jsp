@@ -54,7 +54,7 @@ function confirmHp2(){
 <%@ include file="../include/header.jsp"%>
 
 	<c:if test="${loginCnt != 0 }">
-        <form  action="modifyPro" class="form-horizontal form-element col-12" name="joinForm">
+        <form action="modifyPro" class="form-horizontal form-element col-12" name="joinForm">
         
         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
         

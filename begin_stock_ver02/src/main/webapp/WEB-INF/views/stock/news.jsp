@@ -394,7 +394,7 @@
 			  <!-- Default box -->
 			  <div class="box">
 				<div class="box-header with-border bg-dark">
-				  <a href="${dto.link}"><h5 class="box-title" style="font-weight:bold;">${dto.title}</h5></a>
+				  <a href="${dto.link}" target="_blank"><h5 class="box-title" style="font-weight:bold; color:white;">${dto.title}</h5></a>
 				  <ul class="box-controls pull-right">
 					  <li><a class="box-btn-close" href="#"></a></li>
 					  <li><a class="box-btn-slide" href="#"></a></li>	
@@ -403,13 +403,13 @@
 				<div class="box-body">
 					<div class="row">
 						<div class="col-sm-3">
-						<a href="${dto.link}"><img src="${dto.photo}" class="img-fluid" alt="" /></a>
+						<a href="${dto.link}" target="_blank"><img src="${dto.photo}" class="img-fluid" alt="" /></a>
 						</div>
 						<div class="col-sm-9" style="height:120px;">
 							<div id="slimtest1">
 								<p style="color:white;">${dto.lede}</p>
 								<p style="color:white;">${dto.writer} | ${dto.date}</p>
-								<a class="btn btn-info" href="${dto.link}">Read more</a>
+								<a class="btn btn-info" href="${dto.link}" target="_blank" style="color:white;">Read more</a>
 							</div>
 						</div>
 					</div>
