@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" output="target/classes" path="src/main/java">
+		<attributes>
+			<attribute name="optional" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry including="**/*.java" kind="src" path="src/main/resources"/>
+	<classpathentry kind="src" output="target/test-classes" path="src/test/java">
+		<attributes>
+			<attribute name="optional" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry including="**/*.java" kind="src" output="target/test-classes" path="src/test/resources"/>
+	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jst.server.core.container/org.eclipse.jst.server.tomcat.runtimeTarget/Apache Tomcat v8.5">
+		<attributes>
+			<attribute name="owner.project.facets" value="jst.web"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
+		<attributes>
+			<attribute name="owner.project.facets" value="java"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/maddu/OneDrive/문서/카카오톡 받은 파일/funding_ver3_web3j/lib/abi-3.6.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/maddu/OneDrive/문서/카카오톡 받은 파일/funding_ver3_web3j/lib/asm-5.0.3.jar"/>
+	<classpathentry kind="lib" path="C:/Users/maddu/OneDrive/문서/카카오톡 받은 파일/funding_ver3_web3j/lib/asm-analysis-5.0.3.jar"/>
+	<classpathentry kind="lib" path="C:/Users/maddu/OneDrive/문서/카카오톡 받은 파일/funding_ver3_web3j/lib/asm-commons-5.0.3.jar"/>
+	<classpathentry kind="lib" path="C:/Users/maddu/OneDrive/문서/카카오톡 받은 파일/funding_ver3_web3j/lib/asm-tree-5.0.3.jar"/>
+	<classpathentry kind="lib" path="C:/Users/maddu/OneDrive/문서/카카오톡 받은 파일/funding_ver3_web3j/lib/asm-util-5.0.3.jar"/>
+	<classpathentry kind="lib" path="C:/Users/maddu/OneDrive/문서/카카오톡 받은 파일/funding_ver3_web3j/lib/bcprov-jdk15on-1.54.jar"/>
+	<classpathentry kind="lib" path="C:/Users/maddu/OneDrive/문서/카카오톡 받은 파일/funding_ver3_web3j/lib/codegen-3.6.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/maddu/OneDrive/문서/카카오톡 받은 파일/funding_ver3_web3j/lib/console-3.6.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/maddu/OneDrive/문서/카카오톡 받은 파일/funding_ver3_web3j/lib/core-3.6.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/maddu/OneDrive/문서/카카오톡 받은 파일/funding_ver3_web3j/lib/crypto-3.6.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/maddu/OneDrive/문서/카카오톡 받은 파일/funding_ver3_web3j/lib/infura-3.6.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/maddu/OneDrive/문서/카카오톡 받은 파일/funding_ver3_web3j/lib/jackson-annotations-2.8.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/maddu/OneDrive/문서/카카오톡 받은 파일/funding_ver3_web3j/lib/jackson-core-2.8.5.jar"/>
+	<classpathentry kind="lib" path="C:/Users/maddu/OneDrive/문서/카카오톡 받은 파일/funding_ver3_web3j/lib/jackson-databind-2.8.5.jar"/>
+	<classpathentry kind="lib" path="C:/Users/maddu/OneDrive/문서/카카오톡 받은 파일/funding_ver3_web3j/lib/javapoet-1.7.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/maddu/OneDrive/문서/카카오톡 받은 파일/funding_ver3_web3j/lib/Java-WebSocket-1.3.8.jar"/>
+	<classpathentry kind="lib" path="C:/Users/maddu/OneDrive/문서/카카오톡 받은 파일/funding_ver3_web3j/lib/jffi-1.2.14.jar"/>
+	<classpathentry kind="lib" path="C:/Users/maddu/OneDrive/문서/카카오톡 받은 파일/funding_ver3_web3j/lib/jffi-1.2.14-native.jar"/>
+	<classpathentry kind="lib" path="C:/Users/maddu/OneDrive/문서/카카오톡 받은 파일/funding_ver3_web3j/lib/jnr-constants-0.9.6.jar"/>
+	<classpathentry kind="lib" path="C:/Users/maddu/OneDrive/문서/카카오톡 받은 파일/funding_ver3_web3j/lib/jnr-enxio-0.14.jar"/>
+	<classpathentry kind="lib" path="C:/Users/maddu/OneDrive/문서/카카오톡 받은 파일/funding_ver3_web3j/lib/jnr-ffi-2.1.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/maddu/OneDrive/문서/카카오톡 받은 파일/funding_ver3_web3j/lib/jnr-posix-3.0.33.jar"/>
+	<classpathentry kind="lib" path="C:/Users/maddu/OneDrive/문서/카카오톡 받은 파일/funding_ver3_web3j/lib/jnr-unixsocket-0.15.jar"/>
+	<classpathentry kind="lib" path="C:/Users/maddu/OneDrive/문서/카카오톡 받은 파일/funding_ver3_web3j/lib/jnr-x86asm-1.0.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/maddu/OneDrive/문서/카카오톡 받은 파일/funding_ver3_web3j/lib/logging-interceptor-3.8.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/maddu/OneDrive/문서/카카오톡 받은 파일/funding_ver3_web3j/lib/okhttp-3.8.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/maddu/OneDrive/문서/카카오톡 받은 파일/funding_ver3_web3j/lib/okio-1.13.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/maddu/OneDrive/문서/카카오톡 받은 파일/funding_ver3_web3j/lib/rlp-3.6.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/maddu/OneDrive/문서/카카오톡 받은 파일/funding_ver3_web3j/lib/rxjava-1.2.4.jar"/>
+	<classpathentry kind="lib" path="C:/Users/maddu/OneDrive/문서/카카오톡 받은 파일/funding_ver3_web3j/lib/slf4j-api-1.7.25.jar"/>
+	<classpathentry kind="lib" path="C:/Users/maddu/OneDrive/문서/카카오톡 받은 파일/funding_ver3_web3j/lib/slf4j-nop-1.7.25.jar"/>
+	<classpathentry kind="lib" path="C:/Users/maddu/OneDrive/문서/카카오톡 받은 파일/funding_ver3_web3j/lib/tuples-3.6.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/maddu/OneDrive/문서/카카오톡 받은 파일/funding_ver3_web3j/lib/utils-3.6.0.jar"/>
+	<classpathentry kind="output" path="target/classes"/>
+</classpath>

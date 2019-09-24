@@ -1,0 +1,399 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+<mapper namespace="com.spring.funding.persistence.FundingDAO">
+	<select id="selectUser" resultType="java.util.Map"> <!-- #{map의 key}  -->
+		select username, password, name, hp, hold, enabled, authority
+			from users
+		where username=#{username}
+	</select>
+	
+	<select id="loginPro" resultType="int" parameterType="java.util.Map">
+		SELECT COUNT(*) FROM users WHERE username=#{username} AND password=#{password}
+	</select>
+	
+	<!-- 이경재 9/5 추가 해야할 것  시작 --> 
+	<insert id="fundEdit1" parameterType="java.util.Map">
+		insert into FUND_KEY_INFO
+		values(#{fund_id},#{subject},#{thumbnail},#{imageAndVideo},#{corpIntro},'핵심 포인트','비즈니스전략','상세 정보','투자 포인트',#{content_div})
+	</insert>
+	
+	<update id="fundEdit2" parameterType="java.util.Map">
+		update FUND_KEY_INFO
+		set FUND_STR_BUSINESS = #{busiStr}, FUND_DETAIL_CONTENT = #{data}
+		where fund_id = #{fund_id}
+	</update>
+	
+	<update id="fundEditCompleted" parameterType="java.util.Map">
+		update FUND_KEY_INFO
+		set FUND_INVEST_POINT = #{invPoint}, FUND_POINT = #{corpIntro} 
+		where fund_id = #{fund_id}
+	</update>
+	
+	<insert id="fundEditStock" parameterType="java.util.Map">
+		insert into FUND_STOCK_INFO
+		values(#{fund_id},#{fundingDate},#{goalPrice},#{faceAmount},#{issuingPrice},#{minInvPrice},#{publishDate},#{issueDate},#{corpValTest})
+	</insert>
+	
+	<select id="fundInf" resultType="com.spring.funding.vo.FundInfVO">
+		select * from FUND_KEY_INFO where fund_id = #{fund_id}
+	</select>
+	
+	<select id="stockInf" resultType="com.spring.funding.vo.FundStockInfVO">
+		select * from FUND_STOCK_INFO where fund_id = #{fund_id}
+	</select>
+	
+	<update id="Modifyfund1" parameterType="java.util.Map">
+		update FUND_KEY_INFO
+		set fund_company = #{corpIntro}, FUND_SUBJECT = #{subject}, FUND_THUMBNAIL = #{thumbnail}, FUND_IMG_AND_VIDEO = #{imageAndVideo}, FUND_CONTENT_DIV = #{content_div} where fund_id =#{fund_id}
+	</update>
+	
+	<update id="ModifyfundStock" parameterType="java.util.Map">
+		update FUND_STOCK_INFO
+		set fund_date=#{fundingDate},fund_target_money=#{goalPrice},fund_par_value=#{faceAmount},fund_publish_value=#{issuingPrice},fund_min_invest=#{minInvPrice},fund_schedule_date=#{publishDate},fund_delivery_date=#{issueDate},fund_eval_value=#{corpValTest}
+		where fund_id = #{fund_id}
+	</update>
+	
+	<select id="idChk" resultType="int">
+		select count(*) from fund_key_info where fund_id = #{fund_id}
+	</select>
+	
+	<insert id="fundCommnet" parameterType="java.util.Map">
+		insert into fund_comment values(#{fund_id},#{commentId},#{commentPwd},#{comment},sysdate)
+	</insert>
+	
+	<select id="fundCommnetView" resultType="com.spring.funding.vo.FAQCommentVO">
+		select * from fund_comment where fund_id = #{fund_id} order by qna_date desc	
+	</select>
+	
+	<insert id="CommentTalk" parameterType="java.util.Map">
+		insert into fund_re_comment
+		values(#{qna_id},#{qna_comment},#{reple_id},#{reple_pwd},#{reple_comment},sysdate,#{qna_date})
+	</insert>
+	
+	<select id="CommnetRepleView" parameterType="java.util.Map" resultType="com.spring.funding.vo.commentReplyVO">
+		select * from fund_re_comment where qna_id=#{qna_id} and qna_comment=#{qna_comment} order by reple_date desc
+	</select>
+	
+	<delete id="fundCommnetDel" parameterType="java.util.Map">
+		delete fund_comment where qna_id = #{DelcommentId} and qna_pwd=#{DelcommentPwd} and qna_date=#{qna_date}
+	</delete>
+	
+	<delete id="fundRepleDel" parameterType="java.util.Map">
+		delete fund_re_comment where reple_id = #{DelcommentId} and reple_pwd=#{DelcommentPwd} and reple_date=#{reple_date}
+	</delete>
+	
+	<!-- /* 이경재 9/5 추가 해야할 것  종료 */ -->
+	
+	<select id="idCheck" resultType="int">
+		SELECT COUNT(*) FROM users WHERE username = #{username}
+	</select>
+	
+	<select id="hpCheck" resultType="int">
+		SELECT COUNT(*) FROM users WHERE hp = #{hp}
+	</select>
+	
+	<insert id="insertAuth" parameterType="java.util.Map">
+		INSERT INTO STOCK_AUTH VALUES(#{hp}, #{numStr}, #{date})
+	</insert>
+	
+	<select id="authCheck" resultType="int" parameterType="java.util.Map">
+		<![CDATA[SELECT COUNT(*) FROM STOCK_AUTH WHERE hp=#{hp} AND auth_num=#{numStr} AND #{date} > sysdate - 3/24/60]]>
+	</select>
+	
+	<select id="idHpChk" resultType="int" parameterType="java.util.Map">
+		SELECT COUNT(*) FROM users WHERE name=#{name}AND hp=#{hp}
+	</select>
+	
+	<update id="modifyPwd" parameterType="java.util.Map">
+		UPDATE users SET password = #{password} WHERE hp=#{hp}
+	</update>
+	
+	<select id="findId" resultType="com.spring.funding.vo.FundingVO">
+		SELECT * FROM users WHERE hp = #{hp}
+	</select>
+	
+	<select id="idNameHpChk" resultType="int" parameterType="java.util.Map">
+		SELECT (*) FROM users WHERE username = #{username} AND name = #{name} AND hp = #{hp}
+	</select>
+	
+	<insert id="insertNotice" parameterType="com.spring.funding.vo.NoticeVO">
+		INSERT INTO fund_notice(notice_id, notice_subject, notice_content, notice_kind, notice_date)
+		VALUES(fund_notice_seq.nextval, #{notice_subject}, #{notice_content}, 'N', sysdate)
+	</insert>
+	
+	<insert id="insertEvent" parameterType="com.spring.funding.vo.NoticeVO">
+		INSERT INTO fund_notice(notice_id, notice_subject, notice_content, notice_kind, notice_date)
+		VALUES(fund_notice_seq.nextval, #{notice_subject}, #{notice_content}, 'E', sysdate)
+	</insert>
+	
+	<select id="allNoticeCount" resultType="int">
+		SELECT COUNT(*) as cnt FROM fund_notice
+	</select>
+	
+	<select id="allNoticeList" resultType="com.spring.funding.vo.NoticeVO" parameterType="java.util.Map">
+	<![CDATA[
+		SELECT * 
+		FROM(SELECT notice_id, notice_subject, notice_content, notice_kind, notice_date, rownum rNum 
+				FROM(SELECT * FROM fund_notice)) 
+		WHERE rNum >= #{start} AND rNum <= #{end}
+		ORDER BY notice_date DESC
+		]]>
+	</select>
+	
+	<select id="noticeList" resultType="com.spring.funding.vo.NoticeVO" parameterType="java.util.Map">
+	<![CDATA[
+		SELECT * 
+		FROM(SELECT notice_id, notice_subject, notice_content, notice_kind, notice_date, rownum rNum 
+				FROM(SELECT * FROM fund_notice)) 
+		WHERE rNum >= #{start} AND rNum <= #{end} AND notice_kind='N'
+		ORDER BY notice_date DESC
+		]]>
+	</select>
+	
+	<select id="eventList" resultType="com.spring.funding.vo.NoticeVO" parameterType="java.util.Map">
+	<![CDATA[
+		SELECT * 
+		FROM(SELECT notice_id, notice_subject, notice_content, notice_kind, notice_date, rownum rNum 
+				FROM(SELECT * FROM fund_notice)) 
+		WHERE rNum >= #{start} AND rNum <= #{end} AND notice_kind='E'
+		ORDER BY notice_date DESC
+		]]>
+	</select>
+	
+	<select id="noticeInfo" resultType="com.spring.funding.vo.NoticeVO">
+		SELECT * FROM fund_notice WHERE notice_id=#{notice_id}
+	</select>
+	
+	<delete id="deleteNotice" parameterType="int">
+		DELETE fund_notice WHERE notice_id = #{notice_id}
+	</delete>
+	
+	<!-- 스마트컨트랙트 -->
+	<insert id="insertFundList" parameterType="java.util.Map">
+		insert into FUND_LIST values(#{fundcode}, #{username})
+	</insert>
+	
+	<insert id="createContract" parameterType="java.util.Map">
+		insert into FUND_CONTRACT values(#{fundcode}, #{contractAddress}, 0)
+	</insert>
+	
+	<select id="getContract" resultType="com.spring.funding.vo.ContractVO">
+		select * from FUND_CONTRACT WHERE FUND_ID = #{fundcode}
+	</select>
+	
+	<update id="plusContractIndex">
+		UPDATE FUND_CONTRACT SET FUND_CONTRACT_TOTALINDEX = fund_contract_totalindex + 1 WHERE FUND_ID = #{fundcode}
+	</update>
+	
+	<insert id="createTransaction" parameterType="java.util.Map">
+		INSERT INTO FUND_TRANSACTION VALUES (#{fund_id}, #{username}, #{fund_contract_index})
+	</insert>
+	
+	<update id="updateAccount" parameterType="java.util.Map">
+		update stock_account set money = money - #{totalPrice} where username = #{username}
+	</update>
+	
+	<update id="updateHostAccount" parameterType="java.util.Map">
+		update stock_account set money = money + #{totalPrice} where username = 'host'
+	</update>
+	
+	<select id ="accountInfo" resultType ="com.spring.funding.vo.AccountVO">
+		select * from stock_account where username = #{username}
+	</select>
+	
+	<select id="getMyOwnTransaction" parameterType="java.util.Map" resultType="com.spring.funding.vo.FundingTransactionVO">
+		select ft.fund_id, ft.username, ft.fund_contract_index, fc.fund_contract_address, fi.fund_subject, fsi.fund_min_invest 
+	    from fund_transaction ft 
+	    join fund_contract fc on ft.fund_id = fc.fund_id 
+	    join fund_key_info fi on ft.fund_id = fi.fund_id 
+	    join fund_stock_info fsi on ft.fund_id = fsi.fund_id 
+	    where ft.username = #{username}
+	</select>
+	
+	<select id="getFundTransaction" parameterType="string" resultType="com.spring.funding.vo.FundingTransactionVO">
+		select ft.fund_id, ft.username, ft.fund_contract_index, fc.fund_contract_address, fi.fund_subject, fsi.fund_min_invest 
+	    from fund_transaction ft 
+	    join fund_contract fc on ft.fund_id = fc.fund_id 
+	    join fund_key_info fi on ft.fund_id = fi.fund_id 
+	    join fund_stock_info fsi on ft.fund_id = fsi.fund_id 
+	    where ft.fund_id = #{fund_id2}
+	</select>
+	
+	<update id="modifyNotice" parameterType="java.util.Map">
+		UPDATE fund_notice SET notice_subject = #{notice_subject}, notice_content = #{notice_content} WHERE notice_id = #{notice_id}
+	</update>
+	
+	<select id="memberCount" resultType="int">
+		SELECT COUNT(*) FROM users WHERE username != 'host'
+	</select>
+	
+	<select id="memberList" resultType="com.spring.funding.vo.FundingVO" parameterType="java.util.Map">
+		<![CDATA[
+			SELECT * FROM
+			(SELECT username, password, name, hp, hold, enabled, authority, join_date, rownum rNum
+			FROM(SELECT * FROM users))
+			WHERE rNum >= #{start} AND rNum <= #{end} AND username != 'host'
+			ORDER BY join_date ASC
+		]]>
+	</select>
+	
+	<select id="board_cnt" resultType="int">
+		SELECT SUM(board_cnt) FROM fund_board_count
+	</select>
+		
+	<select id="board_rp_cnt" resultType="int">
+		SELECT COUNT(*) FROM fund_board_count WHERE board_rp_cnt > 0
+	</select>	
+	
+	<select id="boardCount" resultType="com.spring.funding.vo.BoardVO" parameterType="java.util.Map">
+		<![CDATA[
+			SELECT * FROM(
+			SELECT username, name, board_cnt, board_rp_cnt, rownum rNum FROM (SELECT * FROM fund_board_count))
+			WHERE rNum >= #{start} AND rNum <= #{end}
+		]]>
+	</select>
+	
+	<insert id="insertBoard_member" parameterType="java.util.Map">
+		INSERT INTO fund_board_count VALUES(#{username}, #{name}, 0, 0)
+	</insert>
+	
+	<select id="fundingHost" resultType="int">
+		SELECT COUNT(*) FROM fund_key_info
+	</select>
+	
+	<!-- 게시글갯수구하기 -->
+	<select id="getArtcleCnt" resultType="int">
+		SELECT COUNT(*) cnt FROM fund_quiry
+	</select>
+	
+	<!-- 게시글 목록조회 -->
+	<select id="getArticleList" parameterType="java.util.Map" resultType="com.spring.funding.vo.FundInquiryVO">
+	<![CDATA[
+	select * 
+		from (select num, writer, subject, content, readCnt, reg_date, reply_cnt, rownum rNum  
+			from(select * from fund_quiry))
+	where rNum >= #{start} and rNum <= #{end} and writer=#{writer}
+	order by num desc
+	]]>
+	</select>
+	
+	<!-- 조회수 증가 -->
+	<update id="addReadCnt" parameterType="int">
+		update  fund_quiry set readCnt = readCnt+1 where  num = #{num}
+	</update>
+	
+	<!-- 게시글 상세 조회 -->
+	<select id="getArticle" resultType="com.spring.funding.vo.FundInquiryVO">
+		SELECT username, num, name, subject, content, reg_date FROM users us JOIN fund_quiry fq
+		ON us.username = fq.writer AND num = #{num}
+	</select>
+	
+	<!-- 글쓰기 답변 처리 -->
+	<!-- 답변글이 아닌경우(제목글) -->
+	<insert id="insertBoard" parameterType="com.spring.funding.vo.FundInquiryVO">
+		insert into fund_quiry(num,writer,subject,content,readCnt,reg_date) values(fundinquiry_seq.nextval,#{writer},#{subject},#{content},0,sysdate)
+	</insert>
+	
+	<!-- 글 수정 처리 -->
+	<update id="updateBoard" parameterType="com.spring.funding.vo.FundInquiryVO">
+		update fund_quiry set subject = #{subject} , content = #{content} where num=#{num}
+	</update>
+	
+	<!-- 게시글 삭제 -->
+	<delete id="deleteBoard" parameterType="int">
+		delete fund_quiry where num = #{num}
+	</delete>
+	
+	<!-- 답글 달기 -->
+	<insert id="insertBoardComment" parameterType="com.spring.funding.vo.FundInquiryVO">
+		INSERT INTO fund_quiry_comment VALUES(#{num}, #{writer}, #{content}, sysdate)
+	</insert>
+	
+	<!-- 답글 보기 -->
+	<select id="boardCommentList" resultType="com.spring.funding.vo.FundInquiryVO" >
+		SELECT num, writer, content, co_reg_date FROM fund_quiry_comment WHERE num = #{num}
+	</select>
+	
+	<!-- 답글 수량 + 1 -->
+	<update id="updateBoardComment" parameterType="String">
+		UPDATE fund_board_count SET board_rp_cnt = board_rp_cnt+1 WHERE username = #{username}
+	</update>
+	
+	<!-- 게시글 수량 + 1 -->
+	<update id="updateBoardCount" parameterType="String">
+		UPDATE fund_board_count SET board_cnt = board_cnt +1 WHERE username = #{username}
+	</update>
+	
+	<!-- 게시글 수량 - 1 -->
+	<update id="minusBoardCount" parameterType="String">
+		UPDATE fund_board_count SET board_cnt = board_cnt -1 WHERE username = #{username}
+	</update>
+	
+	<!-- 답글 조회 -->
+	<select id="inquiryComment" resultType="int">
+		SELECT COUNT(*) FROM fund_quiry_comment WHERE num = #{num}
+	</select>
+	
+	<!-- 답글 수량 -1 -->
+	<update id="minusBoardComment" parameterType="String">
+		UPDATE fund_board_count SET board_rp_cnt = board_rp_cnt - 1 WHERE username = #{username}
+	</update>
+	
+	<!-- 1대1문의 테이블 답변 여부 -->
+	<update id="updateReply_cnt" parameterType="int">
+		UPDATE fund_quiry SET reply_cnt = 1 WHERE num = #{num}
+	</update>
+	
+	<insert id="insertUser" parameterType="java.util.Map">
+		INSERT INTO USERS(username, password, name, hp, hold, enabled, authority) VALUES(#{username}, #{password}, #{name}, #{hp}, 0, 1, 'ROLE_USER')
+	</insert>
+	
+	<select id="startupCount" resultType="int">
+		select count(*) from fund_key_info where FUND_CONTENT_DIV ='s'
+	</select>
+	
+	<select id="cultureCount" resultType="int">
+		select count(*) from fund_key_info where FUND_CONTENT_DIV ='c'
+	</select>
+	
+	<!-- // ============== 아진 추가 2019.09.17 ================ -->
+    <select id="allfundList" resultType="com.spring.funding.vo.funding_stock_info_allVO">
+       select si.fund_id, si.fund_date, si.fund_min_invest, si.fund_target_money, si.fund_schedule_date, ki.fund_subject, ki.fund_content_div, ki.fund_thumbnail 
+           from fund_stock_info si join fund_key_info ki on si.fund_id = ki.fund_id
+    </select>
+   
+   <insert id="applicationFund" parameterType="com.spring.funding.vo.Fund_reserveVO">
+		INSERT INTO fund_reserve VALUES(fund_reserve_seq.nextval, #{company_name}, #{username}, #{client_email}, #{client_ph}, #{company_site}, #{target_invest}, #{htk_number}, #{htk_content}, 'no_name', #{client_message}, 'n', '')
+	</insert>	
+	
+	<!-- // ============== 계좌생성 -  아진 추가 2019.09.17 ================ -->
+	<insert id="createAccount" parameterType="java.util.Map">
+		insert into STOCK_ACCOUNT (ACCOUNT, USERNAME, PASSWORD, money) values(#{account}, #{username}, #{password}, #{money})
+	</insert>
+	
+	<select id="requestFundCount" resultType="int">
+		SELECT COUNT(*) FROM fund_reserve
+	</select>
+	
+	<select id="requestFundList" parameterType="java.util.Map" resultType="com.spring.funding.vo.Fund_reserveVO">
+	<![CDATA[
+		SELECT * FROM
+		(SELECT reserve_id, company_name, username, client_email, client_ph, company_site, target_invest, htk_number, htk_content, file_name, client_message, reserve_accepted, reserve_account, ROWNUM rnum
+		FROM(SELECT * FROM fund_reserve)) WHERE rnum >= #{start} AND rnum <=#{end}
+		ORDER BY reserve_id DESC
+	]]>
+	</select>
+	
+	<select id="confirmFund" resultType="com.spring.funding.vo.Fund_reserveVO">
+		SELECT * FROM fund_reserve WHERE reserve_id = #{reserve_id}
+	</select>
+   
+   <update id="completeConfirm" parameterType="int">
+   		update fund_reserve set reserve_accepted = 'y', reserve_account = 'host'  WHERE reserve_id = #{reserve_id}
+   </update>
+	
+</mapper>

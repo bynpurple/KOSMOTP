@@ -1,0 +1,218 @@
+body {
+    background-color:white;
+    background-image:
+    radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 40px),
+    radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 30px),
+    radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 40px),
+    radial-gradient(rgba(255,255,255,.4), rgba(255,255,255,.1) 2px, transparent 30px);
+    background-size: 550px 550px, 350px 350px, 250px 250px, 150px 150px;
+    background-position: 0 0, 40px 60px, 130px 270px, 70px 100px;
+}
+
+.content {
+    max-width: 1200px;
+    margin: 56px auto 0 auto;
+}
+
+footer {
+    color: #ffebc1;
+    bottom: 0;
+    margin-top: 38px;
+}
+
+.content .sub-title {
+    color: #f4b124;
+}
+
+.content button {
+    margin-bottom: 10px;
+}
+
+/** badge */
+.badge {
+    padding: 10px 0;
+    background-color: inherit;
+ }
+
+ .badge > * {
+    float: left;
+    padding: 0 0 0 10px !important;
+ }
+
+ /** image list */
+ .image-list {
+    display: flex;
+    box-sizing: border-box;
+    position: relative;
+    width: 100%;
+    margin: 10px 0 10px 0;
+    padding: 4px;
+    background: #fff;
+}
+
+.xefu-btn {
+    display: inline-block;
+    *display: inline;
+    margin: 0;
+    padding: 0 12px!important;
+    height: 24px!important;
+    overflow: visible;
+    border: 1px solid #bbb;
+    border-radius: 2px;
+    text-decoration: none!important;
+    text-align: center;
+    vertical-align: top;
+    line-height: 24px!important;
+    font-family: inherit;
+    font-size: 12px;
+    color: #333;
+    *zoom: 1;
+    cursor: pointer;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.2), 0 1px 2px rgba(0,0,0,.05);
+    background-color: #f5f5f5;
+    *background-color: #e6e6e6;
+    background-image: -moz-linear-gradient(top,#ffffff,#e6e6e6);
+    background-image: -webkit-linear-gradient(top,#ffffff,#e6e6e6);
+    background-image: -webkit-gradient(top,#ffffff,#e6e6e6);
+    background-image: -o-linear-gradient(top,#ffffff,#e6e6e6);
+    background-image: linear-gradient(top,#ffffff,#e6e6e6);
+    background-repeat: repeat-x;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff',endColorstr='#e6e6e6',GradientType=0);
+    filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+}
+
+.image-list .files-text {
+    display: inline-block;
+    margin: 0 -12px!important;
+    padding: 0 12px!important;
+    overflow: visible;
+    width: auto;
+    height: 24px;
+    border: 0;
+    vertical-align: top;
+    text-decoration: none!important;
+    line-height: 24px;
+    font-family: inherit;
+    font-size: 12px;
+    color: #333;
+    cursor: pointer;
+    background: 0 0;
+}
+
+.image-list .files-input {
+    position: absolute;
+    width: 112px;
+    left: 14px;
+    top: 57px;
+    margin: 0;
+    opacity: 0;
+    -ms-filter: 'alpha(opacity=0)';
+    font-size: 200px!important;
+    direction: ltr;
+    cursor: pointer;
+}
+
+.image-list * {
+    font-size: 13px;
+    box-sizing: border-box;
+}
+
+.image-list button {
+    margin: 0 !important;
+}
+
+.image-list .file-list-info {
+    float: left;
+    white-space: nowrap;
+    padding: 10px;
+    background: #f5f5f5;
+    border: 1px solid #ccc;
+}
+
+.image-list .file-list-info span {
+    display: block;
+    width: 100%;
+    margin: 12px 0;
+}
+
+.image-list .file-list-info .total-size {
+    color: #333;
+}
+
+.image-list .file-list {
+    padding: 0 0 0 0;
+    margin: 0 0 0 10px;
+    border: none;
+}
+
+.image-list .file-list ul {
+    margin: 0;
+    padding: 0;
+    height: auto;
+    width: 100%;
+    background-color: #f5f5f5;
+    border: 1px solid #ccc;
+}
+
+.image-list .file-list ul li {
+    position: relative;
+    display: inline-block;
+    margin: 3px;
+    width: 60px;
+    height: 60px;
+    border: 3px solid #fff;
+}
+
+.image-list .file-list ul li .image-wrapper {
+    width: 54px;
+    height: 54px;;
+}
+
+.image-list .file-list ul li.checked {
+    border: 3px solid #dc3545;
+}
+
+.image-list .file-list ul li img {
+    width: 100%;
+    height: auto;
+}
+
+.image-list .file-list ul li .image-size {
+    color: #666;
+    font-size: 10px;
+}
+
+.image-list .file-list ul li .image-check {
+    position: absolute;
+    height: 12px;
+    width: 12px;;
+    top: 0;
+    left: auto;
+    right: 0;
+    margin: 0;
+    padding: 1px 0 1px 2px;
+    border: 0;
+    border-radius: 0 0 0 5px;
+    outline: none;
+    background-color: #dc3545;
+}
+
+.image-list .file-list ul li.checked .image-check {
+    display: block;
+}
+
+.image-list .file-list ul li:not(.checked) .image-check {
+    display: none;
+}
+
+.image-list .file-list ul li .image-check svg {
+    display: inline-block;
+    font-size: 10px;
+    height: 1em;
+    width: 1em;
+    overflow: visible;
+    vertical-align: 0.875em;
+    margin: 0;
+    padding: 0;
+    color: #fff;
+}
