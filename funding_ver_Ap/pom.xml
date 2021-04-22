@@ -155,7 +155,7 @@
     <dependency>
         <groupId>org.mybatis</groupId>
         <artifactId>mybatis</artifactId>
-        <version>3.4.6</version>
+        <version>3.5.6</version>
     </dependency>
     <!-- Mybatis 설정 종료 -->
 
