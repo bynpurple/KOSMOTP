@@ -215,7 +215,7 @@
 	<dependency>
 	    <groupId>org.bouncycastle</groupId>
 	    <artifactId>bcprov-jdk15on</artifactId>
-	    <version>1.62</version>
+	    <version>1.67</version>
 	</dependency>
 	<!-- 컨트랙트 하려면 위의 메이븐 다 추가해야함 -->
 	<!-- Test -->
